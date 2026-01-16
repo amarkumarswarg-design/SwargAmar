@@ -321,4 +321,80 @@
         function globalSearch(q) {
             const list = document.getElementById('search-list');
             if(!q.trim()) return list.innerHTML = "";
-            const users = JSON.parse(localStorage.getItem('swarg_users_glob
+            const users = JSON.parse(localStorage.getItem('swarg_users_global'));
+            const filter = users.filter(u => u.user.includes(q.toLowerCase()) || u.name.toLowerCase().includes(q.toLowerCase()));
+            
+            list.innerHTML = filter.map(u => {
+                const isFollow = (me.following || []).includes(u.user);
+                const isAmar = u.user.toLowerCase() === 'amar';
+                return `
+                <div class="flex items-center justify-between bg-white p-5 rounded-[2.5rem] border shadow-lg shadow-blue-50/20">
+                    <div class="flex items-center space-x-4">
+                        <img src="${u.dp}" class="w-14 h-14 rounded-2xl object-cover border">
+                        <div>
+                            <p class="font-black text-sm italic">${u.name} ${isAmar ? '<i class="fas fa-check-circle blue-tick"></i>' : ''}</p>
+                            <p class="text-xs text-blue-500 font-bold">@${u.user}</p>
+                        </div>
+                    </div>
+                    ${u.user !== me.user ? `
+                        <button onclick="handleFollow('${u.user}')" class="${isFollow ? 'bg-slate-100 text-slate-400' : 'bg-blue-600 text-white shadow-lg'} px-6 py-2 rounded-2xl font-black text-xs uppercase">
+                            ${isFollow ? 'Unfollow' : 'Follow'}
+                        </button>
+                    ` : '<span class="text-[10px] font-black text-slate-300 uppercase tracking-widest pr-4 italic">You</span>'}
+                </div>`;
+            }).join('');
+        }
+
+        function handleFollow(targetU) {
+            let all = JSON.parse(localStorage.getItem('swarg_users_global'));
+            const meObj = all.find(x => x.user === me.user);
+            const targetObj = all.find(x => x.user === targetU);
+
+            const idx = meObj.following.indexOf(targetU);
+            if(idx === -1) { meObj.following.push(targetU); targetObj.followers.push(me.user); }
+            else { meObj.following.splice(idx, 1); targetObj.followers.splice(targetObj.followers.indexOf(me.user), 1); }
+
+            localStorage.setItem('swarg_users_global', JSON.stringify(all));
+            globalSearch(document.querySelector('input[onkeyup="globalSearch(this.value)"]').value);
+            sync();
+        }
+
+        // --- MODALS ---
+        function openFollowModal(type) {
+            const modal = document.getElementById('f-modal');
+            const list = document.getElementById('f-list');
+            document.getElementById('f-title').innerText = type.toUpperCase();
+            modal.classList.remove('hidden');
+
+            const all = JSON.parse(localStorage.getItem('swarg_users_global'));
+            const ids = type === 'followers' ? me.followers : me.following;
+            if(!ids || ids.length === 0) return list.innerHTML = `<p class="text-center py-10 font-bold text-slate-300 italic">No connections yet...</p>`;
+            
+            const matches = all.filter(u => ids.includes(u.user));
+            list.innerHTML = matches.map(u => `
+                <div class="flex items-center space-x-4 p-4 bg-slate-50 rounded-3xl border border-white">
+                    <img src="${u.dp}" class="w-12 h-12 rounded-2xl object-cover border">
+                    <div><p class="font-black text-sm">${u.name}</p><p class="text-[10px] text-blue-500 font-bold">@${u.user}</p></div>
+                </div>`).join('');
+        }
+        function closeModal() { document.getElementById('f-modal').classList.add('hidden'); }
+
+        function renderGrid(posts) {
+            const grid = document.getElementById('profile-grid');
+            grid.innerHTML = posts.map(p => p.img ? `<img src="${p.img}" class="w-full aspect-square object-cover rounded-3xl border shadow-sm">` : `<div class="aspect-square bg-white border rounded-3xl p-4 text-[10px] flex items-center justify-center text-center italic text-slate-300 overflow-hidden">${p.txt}</div>`).join('');
+        }
+
+        function showTab(t, b) {
+            document.querySelectorAll('.tab-content').forEach(x => x.classList.remove('active-tab'));
+            document.querySelectorAll('nav button').forEach(x => { x.classList.remove('nav-active'); x.classList.add('text-slate-300'); });
+            document.getElementById('tab-' + t).classList.add('active-tab');
+            if(b) b.classList.add('nav-active');
+            if(t === 'feed') renderWall();
+            if(t === 'profile') sync();
+        }
+
+        function logout() { localStorage.removeItem('swarg_sess_global'); location.reload(); }
+        function forceReset() { if(confirm("Mita dein sab kuch?")) { localStorage.clear(); location.reload(); } }
+    </script>
+</body>
+</html>
