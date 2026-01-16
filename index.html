@@ -288,4 +288,61 @@
                     <div class="flex items-center space-x-4">
                         <img src="${x.dp}" class="w-14 h-14 rounded-2xl object-cover border-2 border-blue-50">
                         <div>
+                            <p class="font-black text-lg italic">${x.n} ${x.u === 'amar' ? '<i class="fas fa-check-circle blue-tick-v6"></i>' : ''}</p>
+                            <p class="text-xs text-blue-500 font-bold">@${x.u}</p>
+                        </div>
+                    </div>
+                    <button class="bg-blue-600 text-white px-8 py-3 rounded-2xl font-black text-xs">VISIT</button>
+                </div>`).join('');
+        }
+
+        function openInfinityList(type) {
+            const list = document.getElementById('inf-content');
+            const modal = document.getElementById('infinity-modal');
+            document.getElementById('inf-title').innerText = type.toUpperCase();
+            modal.classList.remove('hidden');
+            list.innerHTML = "";
+
+            if(type === 'followers' && session.u === 'amar') {
+                list.innerHTML += vipCelebrities.map(v => `
+                    <div class="flex items-center justify-between p-5 bg-slate-50 rounded-[2.5rem] border-2 border-white shadow-sm">
+                        <div class="flex items-center space-x-4">
+                            <img src="${v.dp}" class="w-16 h-16 rounded-2xl border-4 border-white shadow-md object-cover">
+                            <div><p class="font-black text-xl italic">${v.n} <i class="fas fa-check-circle blue-tick-v6"></i></p><p class="text-xs text-blue-600 font-bold uppercase">@${v.u}</p></div>
+                        </div>
+                    </div>`).join('');
+                for(let i=1; i<=15; i++) {
+                    list.innerHTML += `
+                    <div class="flex items-center space-x-4 p-4 opacity-40 grayscale">
+                        <img src="https://ui-avatars.com/api/?name=User+${i}" class="w-12 h-12 rounded-xl">
+                        <div><p class="font-bold">Swarg Angel ${i}</p><p class="text-xs">@fan_v${i}</p></div>
+                    </div>`;
+                }
+                list.innerHTML += `<p class="text-center py-10 font-black text-slate-300 italic text-xl tracking-tighter uppercase">+ 10,999,980 more Angels in Kingdom</p>`;
+            } else if(type === 'following' && session.u === 'amar') {
+                list.innerHTML += vipCelebrities.map(v => `
+                    <div class="flex items-center justify-between p-5 bg-slate-50 rounded-[2.5rem] border border-blue-100 shadow-sm">
+                        <div class="flex items-center space-x-4">
+                            <img src="${v.dp}" class="w-14 h-14 rounded-2xl">
+                            <p class="font-black italic">${v.n} <i class="fas fa-check-circle blue-tick-v6"></i></p>
+                        </div>
+                        <span class="bg-blue-600 text-white px-5 py-2 rounded-xl font-black text-[10px]">KINGDOM</span>
+                    </div>`).join('');
+            } else {
+                list.innerHTML = `<p class="text-center py-20 font-black text-slate-300 italic uppercase">Searching connections in the universe...</p>`;
+            }
+        }
+
+        function closeInfinityModal() { document.getElementById('infinity-modal').classList.add('hidden'); }
+        function showTab(t, b) {
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active-tab'));
+            document.querySelectorAll('nav button').forEach(x => x.classList.remove('nav-active'));
+            document.getElementById('tab-' + t).classList.add('active-tab');
+            if(b) b.classList.add('nav-active');
+            if(t === 'profile') refreshState();
+        }
+        function handleLogout() { localStorage.removeItem('swarg_v6_session'); location.reload(); }
+    </script>
+</body>
+</html>
                  
