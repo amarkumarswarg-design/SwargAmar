@@ -367,4 +367,187 @@
             if(posts.length === 0) {
                 wall.innerHTML = `
                     <div class="p-10 text-center bg-white rounded-[2rem] border-2 border-dashed border-slate-100">
-                        <i cl
+                          <i class="fas fa-feather text-4xl text-slate-200 mb-4"></i>
+                        <p class="text-slate-400 font-bold">Swarg khali hai... Kuch post karein!</p>
+                    </div>`;
+                return;
+            }
+
+            wall.innerHTML = posts.map(p => `
+                <div class="bg-white p-6 rounded-[2.5rem] shadow-xl shadow-slate-200/50 post-card border border-white">
+                    <div class="flex items-center justify-between mb-5">
+                        <div class="flex items-center space-x-4">
+                            <img src="${p.dp}" class="w-12 h-12 rounded-2xl object-cover shadow-md">
+                            <div>
+                                <h4 class="font-black text-sm text-slate-800 tracking-tighter">${p.name}</h4>
+                                <p class="text-[10px] text-blue-500 font-extrabold">@${p.user} • ${p.time}</p>
+                            </div>
+                        </div>
+                        ${p.user === currentUser.user ? `<i class="fas fa-trash-can text-slate-300" onclick="deletePost(${p.id})"></i>` : `<i class="fas fa-ellipsis text-slate-300"></i>`}
+                    </div>
+                    <p class="text-slate-700 font-medium leading-relaxed mb-4">${p.text}</p>
+                    ${p.img ? `<img src="${p.img}" class="w-full h-64 object-cover rounded-3xl mb-5 shadow-inner">` : ""}
+                    <div class="flex items-center justify-between pt-4 border-t border-slate-50">
+                        <div class="flex space-x-6">
+                            <button onclick="likePost(this)" class="flex items-center space-x-2 text-slate-400 font-black">
+                                <i class="far fa-heart text-xl"></i>
+                                <span class="text-xs">${p.likes}</span>
+                            </button>
+                            <button class="flex items-center space-x-2 text-slate-400 font-black">
+                                <i class="far fa-comment text-xl"></i>
+                                <span class="text-xs">0</span>
+                            </button>
+                        </div>
+                        <i class="far fa-paper-plane text-slate-400"></i>
+                    </div>
+                </div>`).join('');
+        }
+
+        function deletePost(id) {
+            if(confirm("Swarg se ye post mita dein?")) {
+                let posts = JSON.parse(localStorage.getItem('swarg_posts_v3') || "[]");
+                posts = posts.filter(p => p.id !== id);
+                localStorage.setItem('swarg_posts_v3', JSON.stringify(posts));
+                renderFeed();
+            }
+        }
+
+        function likePost(btn) {
+            const icon = btn.querySelector('i');
+            const count = btn.querySelector('span');
+            if(icon.classList.contains('far')) {
+                icon.className = 'fas fa-heart text-red-500';
+                count.innerText = parseInt(count.innerText) + 1;
+            } else {
+                icon.className = 'far fa-heart text-slate-400';
+                count.innerText = parseInt(count.innerText) - 1;
+            }
+        }
+
+        // --- STORY SYSTEM ---
+        function postStory(input) {
+            if(!input.files[0]) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                let stories = JSON.parse(localStorage.getItem('swarg_stories_v3') || "[]");
+                stories.unshift({
+                    user: currentUser.user,
+                    name: currentUser.name,
+                    dp: currentUser.dp,
+                    img: e.target.result
+                });
+                localStorage.setItem('swarg_stories_v3', JSON.stringify(stories));
+                renderStories();
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+
+        function renderStories() {
+            const wall = document.getElementById('story-wall');
+            const stories = JSON.parse(localStorage.getItem('swarg_stories_v3') || "[]");
+            wall.innerHTML = stories.map(s => `
+                <div class="flex-shrink-0 text-center cursor-pointer" onclick="viewStory('${s.img}', '${s.name}', '${s.dp}')">
+                    <div class="w-20 h-20 story-ring">
+                        <img src="${s.img}" class="w-full h-full rounded-full object-cover border-4 border-white">
+                    </div>
+                    <p class="text-[10px] mt-2 font-black text-slate-800">${s.name.split(' ')[0]}</p>
+                </div>`).join('');
+        }
+
+        function viewStory(img, name, dp) {
+            document.getElementById('sm-img').src = img;
+            document.getElementById('sm-name').innerText = name;
+            document.getElementById('sm-dp').src = dp;
+            document.getElementById('story-modal').classList.remove('hidden');
+        }
+
+        function closeStory() {
+            document.getElementById('story-modal').classList.add('hidden');
+        }
+
+        // --- DISCOVER / SEARCH ---
+        function renderDiscover() {
+            const users = JSON.parse(localStorage.getItem('swarg_users_v3') || "[]");
+            const box = document.getElementById('member-suggestions');
+            const filtered = users.filter(u => u.user !== currentUser.user).slice(0, 5);
+
+            if(filtered.length === 0) {
+                box.innerHTML = `<p class="text-sm text-slate-400 italic">Abhi koi aur nahi hai Swarg mein.</p>`;
+                return;
+            }
+
+            box.innerHTML = filtered.map(u => `
+                <div class="flex items-center justify-between bg-white p-4 rounded-3xl border border-slate-100">
+                    <div class="flex items-center space-x-4">
+                        <img src="${u.dp}" class="w-12 h-12 rounded-2xl object-cover">
+                        <div>
+                            <p class="font-black text-slate-800 text-sm">${u.name}</p>
+                            <p class="text-[10px] text-blue-500 font-black uppercase">@${u.user}</p>
+                        </div>
+                    </div>
+                    <button class="bg-slate-900 text-white text-[10px] px-6 py-2 rounded-2xl font-black uppercase tracking-tighter shadow-lg active:scale-95">Follow</button>
+                </div>`).join('');
+        }
+
+        function globalSearch(q) {
+            const res = document.getElementById('search-results');
+            if(!q) return res.innerHTML = "";
+            
+            const users = JSON.parse(localStorage.getItem('swarg_users_v3') || "[]");
+            const filtered = users.filter(u => u.user.includes(q.toLowerCase()) || u.name.toLowerCase().includes(q.toLowerCase()));
+
+            res.innerHTML = filtered.map(u => `
+                <div class="bg-white p-5 rounded-[2.5rem] border-2 border-blue-50 flex items-center justify-between shadow-xl shadow-blue-50/50">
+                    <div class="flex items-center space-x-4">
+                        <img src="${u.dp}" class="w-14 h-14 rounded-[1.5rem] object-cover">
+                        <div>
+                            <p class="font-black text-slate-800">${u.name}</p>
+                            <p class="text-xs text-blue-600 font-bold italic">@${u.user}</p>
+                        </div>
+                    </div>
+                    <button class="bg-blue-600 text-white px-5 py-3 rounded-2xl font-black text-xs shadow-lg shadow-blue-100">Profile</button>
+                </div>`).join('');
+        }
+
+        // --- CORE NAVIGATION ---
+        function showTab(tab, btn) {
+            console.log("Switching to tab:", tab);
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active-tab'));
+            document.querySelectorAll('nav button').forEach(b => b.classList.remove('nav-active'));
+            document.querySelectorAll('nav button').forEach(b => b.classList.add('text-slate-300'));
+            
+            document.getElementById('tab-' + tab).classList.add('active-tab');
+            if(btn) {
+                btn.classList.add('nav-active');
+                btn.classList.remove('text-slate-300');
+            }
+
+            if(tab === 'feed') renderFeed();
+            if(tab === 'profile') renderFeed(); // to update count
+        }
+
+        function verifyDataIntegrity() {
+            // Clean undefined data
+            const keys = ['swarg_users_v3', 'swarg_posts_v3', 'swarg_stories_v3'];
+            keys.forEach(k => {
+                let data = JSON.parse(localStorage.getItem(k) || "[]");
+                if(!Array.isArray(data)) localStorage.setItem(k, "[]");
+            });
+        }
+
+        function logout() {
+            if(confirm("Swarg chhod kar jana chahte hain?")) {
+                localStorage.removeItem('swarg_session_v3');
+                location.reload();
+            }
+        }
+
+        function forceReset() {
+            if(confirm("WARNING: Sab kuch delete ho jayega (Accounts + Posts). Reset karein?")) {
+                localStorage.clear();
+                location.reload();
+            }
+        }
+    </script>
+</body>
+</html>
