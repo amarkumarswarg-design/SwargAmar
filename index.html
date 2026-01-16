@@ -317,4 +317,262 @@
 
         function createPost() {
             const text = document.getElementById('post-text-input').value.trim();
-            if(!text
+            if(!text && !postTempImg) return alert("Kuch toh likhiye!");
+
+            let posts = JSON.parse(localStorage.getItem('sw_posts'));
+            posts.unshift({
+                id: Date.now(),
+                user: userSession.user,
+                name: userSession.name,
+                dp: userSession.dp,
+                text,
+                img: postTempImg,
+                likes: []
+            });
+            
+            localStorage.setItem('sw_posts', JSON.stringify(posts));
+            document.getElementById('post-text-input').value = "";
+            cancelPostImage();
+            renderGlobalFeed();
+            updateHeaderAndProfile();
+        }
+
+        function renderGlobalFeed() {
+            const wall = document.getElementById('global-feed');
+            const posts = JSON.parse(localStorage.getItem('sw_posts'));
+
+            if(posts.length === 0) {
+                wall.innerHTML = `<div class="p-10 text-center bg-white rounded-3xl border border-dashed border-slate-200 text-slate-400 font-bold">Swarg abhi khali hai. Pehla post karein!</div>`;
+                return;
+            }
+
+            wall.innerHTML = posts.map(p => {
+                const isAmar = p.user.toLowerCase() === 'amar';
+                const isLiked = (p.likes || []).includes(userSession.user);
+                return `
+                <div class="post-card p-6 bg-white overflow-hidden">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center space-x-3 cursor-pointer">
+                            <img src="${p.dp}" class="w-11 h-11 rounded-2xl object-cover border">
+                            <div>
+                                <h4 class="font-black text-sm flex items-center">${p.name} ${isAmar ? '<i class="fas fa-check-circle owner-tick"></i>' : ''}</h4>
+                                <p class="text-[10px] text-blue-500 font-black uppercase tracking-widest">@${p.user} ${isAmar ? '• OWNER' : ''}</p>
+                            </div>
+                        </div>
+                        ${p.user === userSession.user ? `<i class="fas fa-trash-can text-slate-200 hover:text-red-500" onclick="deletePost(${p.id})"></i>` : ''}
+                    </div>
+                    <p class="text-slate-700 font-medium leading-relaxed mb-4">${p.text}</p>
+                    ${p.img ? `<img src="${p.img}" class="w-full rounded-[2.5rem] mb-4 border shadow-inner">` : ''}
+                    <div class="flex items-center space-x-6 pt-4 border-t text-slate-400 font-bold text-xs">
+                        <button onclick="handlePostLike(${p.id}, this)" class="flex items-center space-x-2 ${isLiked ? 'text-red-500' : ''}">
+                            <i class="${isLiked ? 'fas' : 'far'} fa-heart text-xl"></i><span>${(p.likes || []).length}</span>
+                        </button>
+                        <button class="flex items-center space-x-2" onclick="alert('Comments feature updating!')"><i class="far fa-comment-dots text-xl"></i><span>0</span></button>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        function handlePostLike(id, btn) {
+            let posts = JSON.parse(localStorage.getItem('sw_posts'));
+            const p = posts.find(x => x.id === id);
+            const idx = p.likes.indexOf(userSession.user);
+            if(idx === -1) p.likes.push(userSession.user); else p.likes.splice(idx, 1);
+            localStorage.setItem('sw_posts', JSON.stringify(posts));
+            renderGlobalFeed();
+        }
+
+        function deletePost(id) {
+            if(!confirm("Swarg se ye post mita dein?")) return;
+            let posts = JSON.parse(localStorage.getItem('sw_posts'));
+            posts = posts.filter(p => p.id !== id);
+            localStorage.setItem('sw_posts', JSON.stringify(posts));
+            renderGlobalFeed();
+            updateHeaderAndProfile();
+        }
+
+        // --- SEARCH & DISCOVER ENGINE ---
+        function searchGlobal(q) {
+            const resultsWall = document.getElementById('search-results-wall');
+            if(!q.trim()) return resultsWall.innerHTML = "";
+
+            const users = JSON.parse(localStorage.getItem('sw_users'));
+            const matches = users.filter(u => u.name.toLowerCase().includes(q.toLowerCase()) || u.user.includes(q.toLowerCase()));
+
+            if(matches.length === 0) {
+                resultsWall.innerHTML = `<p class="text-center text-slate-400 py-10">Bhatakti hui aatma! Koi nahi mila.</p>`;
+                return;
+            }
+
+            resultsWall.innerHTML = matches.map(u => {
+                const isFollowing = (userSession.following || []).includes(u.user);
+                const isAmar = u.user.toLowerCase() === 'amar';
+                return `
+                <div class="flex items-center justify-between bg-white p-5 rounded-[2.5rem] border border-blue-50 shadow-lg shadow-blue-50/20">
+                    <div class="flex items-center space-x-4">
+                        <img src="${u.dp}" class="w-14 h-14 rounded-2xl object-cover border">
+                        <div>
+                            <p class="font-black text-lg tracking-tighter">${u.name} ${isAmar ? '<i class="fas fa-check-circle owner-tick"></i>' : ''}</p>
+                            <p class="text-xs text-blue-500 font-bold italic">@${u.user}</p>
+                        </div>
+                    </div>
+                    ${u.user !== userSession.user ? `
+                        <button onclick="handleFollowToggle('${u.user}')" class="${isFollowing ? 'bg-slate-100 text-slate-500' : 'bg-blue-600 text-white shadow-lg shadow-blue-100'} px-6 py-3 rounded-2xl font-black text-xs transition-all active:scale-90">
+                            ${isFollowing ? 'Unfollow' : 'Follow'}
+                        </button>
+                    ` : '<span class="text-[10px] font-black text-slate-300 pr-4 uppercase">You</span>'}
+                </div>`;
+            }).join('');
+        }
+
+        function handleFollowToggle(targetUser) {
+            let users = JSON.parse(localStorage.getItem('sw_users'));
+            const meObj = users.find(u => u.user === userSession.user);
+            const targetObj = users.find(u => u.user === targetUser);
+
+            const followIdx = meObj.following.indexOf(targetUser);
+            if(followIdx === -1) {
+                meObj.following.push(targetUser);
+                targetObj.followers.push(userSession.user);
+            } else {
+                meObj.following.splice(followIdx, 1);
+                targetObj.followers.splice(targetObj.followers.indexOf(userSession.user), 1);
+            }
+
+            localStorage.setItem('sw_users', JSON.stringify(users));
+            searchGlobal(document.querySelector('input[onkeyup="searchGlobal(this.value)"]').value);
+            updateHeaderAndProfile();
+        }
+
+        // --- STORY ENGINE ---
+        function uploadStory(input) {
+            if(!input.files[0]) return;
+            const r = new FileReader();
+            r.onload = (e) => {
+                let stories = JSON.parse(localStorage.getItem('sw_stories'));
+                stories.unshift({ id: Date.now(), user: userSession.user, name: userSession.name, dp: userSession.dp, img: e.target.result });
+                localStorage.setItem('sw_stories', JSON.stringify(stories));
+                renderStoriesWall();
+            };
+            r.readAsDataURL(input.files[0]);
+        }
+
+        function renderStoriesWall() {
+            const wall = document.getElementById('story-wall');
+            const stories = JSON.parse(localStorage.getItem('sw_stories'));
+            wall.innerHTML = stories.map(s => `
+                <div class="flex-shrink-0 text-center cursor-pointer" onclick="viewStory(${s.id})">
+                    <div class="w-16 h-16 story-circle">
+                        <img src="${s.img}" class="w-full h-full rounded-full object-cover border-4 border-white">
+                    </div>
+                    <p class="text-[10px] mt-1 font-bold text-slate-800">${s.name.split(' ')[0]}</p>
+                </div>`).join('');
+        }
+
+        function viewStory(id) {
+            const s = JSON.parse(localStorage.getItem('sw_stories')).find(x => x.id === id);
+            document.getElementById('sm-img').src = s.img;
+            document.getElementById('sm-name').innerText = s.name;
+            document.getElementById('sm-dp').src = s.dp;
+            document.getElementById('story-modal').classList.remove('hidden');
+        }
+
+        function closeStory() { document.getElementById('story-modal').classList.add('hidden'); }
+
+        // --- FOLLOW LIST MODAL ---
+        function openFollowersList(type) {
+            const modal = document.getElementById('follow-modal');
+            const list = document.getElementById('follow-modal-list');
+            const title = document.getElementById('follow-modal-title');
+            
+            title.innerText = type === 'followers' ? 'Your Followers' : 'Following';
+            modal.classList.remove('hidden');
+
+            const users = JSON.parse(localStorage.getItem('sw_users'));
+            const targetIds = type === 'followers' ? userSession.followers : userSession.following;
+
+            if(!targetIds || targetIds.length === 0) {
+                list.innerHTML = `<div class="p-10 text-center text-slate-400 font-bold">Koi nahi hai yahan...</div>`;
+                return;
+            }
+
+            const targets = users.filter(u => targetIds.includes(u.user));
+            list.innerHTML = targets.map(u => `
+                <div class="flex items-center space-x-4 bg-slate-50 p-4 rounded-3xl border border-white">
+                    <img src="${u.dp}" class="w-12 h-12 rounded-2xl object-cover border">
+                    <div>
+                        <p class="font-black text-sm">${u.name}</p>
+                        <p class="text-[10px] text-blue-500 font-bold">@${u.user}</p>
+                    </div>
+                </div>`).join('');
+        }
+
+        function closeFollowModal() { document.getElementById('follow-modal').classList.add('hidden'); }
+
+        // --- PROFILE GRID ---
+        function renderProfileGrid(posts) {
+            const grid = document.getElementById('my-post-grid');
+            if(posts.length === 0) {
+                grid.innerHTML = `<div class="col-span-2 p-10 text-center text-slate-300 text-xs italic">Aapne abhi tak kuch post nahi kiya.</div>`;
+                return;
+            }
+            grid.innerHTML = posts.map(p => p.img ? `
+                <img src="${p.img}" class="w-full aspect-square object-cover rounded-[2rem] border shadow-sm">
+            ` : `
+                <div class="aspect-square bg-white border rounded-[2rem] p-4 text-[10px] flex items-center justify-center text-slate-500 font-medium italic text-center overflow-hidden">
+                    ${p.text}
+                </div>`).join('');
+        }
+
+        // --- PROFILE EDIT ---
+        function openEditProfile() {
+            document.getElementById('edit-name-inp').value = userSession.name;
+            document.getElementById('edit-profile-modal').classList.remove('hidden');
+        }
+
+        function closeEditProfile() { document.getElementById('edit-profile-modal').classList.add('hidden'); }
+
+        function saveProfileChanges() {
+            const newName = document.getElementById('edit-name-inp').value.trim();
+            const newPass = document.getElementById('edit-pass-inp').value.trim();
+            
+            if(!newName) return alert("Naam toh likhiye!");
+
+            let users = JSON.parse(localStorage.getItem('sw_users'));
+            const idx = users.findIndex(u => u.user === userSession.user);
+            
+            users[idx].name = newName;
+            if(newPass) users[idx].pass = newPass;
+
+            localStorage.setItem('sw_users', JSON.stringify(users));
+            localStorage.setItem('sw_session', JSON.stringify(users[idx]));
+            
+            closeEditProfile();
+            updateHeaderAndProfile();
+            alert("Swarg Identity Updated!");
+        }
+
+        // --- CORE NAVIGATION ---
+        function showTab(t, b) {
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active-tab'));
+            document.querySelectorAll('nav button').forEach(b => { b.classList.remove('nav-active'); b.classList.add('text-slate-300'); });
+            document.getElementById('tab-' + t).classList.add('active-tab');
+            if(b) { b.classList.add('nav-active'); b.classList.remove('text-slate-300'); }
+            if(t === 'feed') renderGlobalFeed();
+            if(t === 'profile') updateHeaderAndProfile();
+        }
+
+        function logout() {
+            if(!confirm("Swarg chhod kar jana chahte hain?")) return;
+            localStorage.removeItem('sw_session');
+            location.reload();
+        }
+
+        function forceReset() {
+            if(!confirm("DANGEROUS: Sab kuch mita dein?")) return;
+            localStorage.clear();
+            location.reload();
+        }
+    </script>
+</body>
+</html>
