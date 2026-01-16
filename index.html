@@ -315,4 +315,56 @@
         function handleFollow(target) {
             let all = JSON.parse(localStorage.getItem('sw_users_final') || "[]");
             const m = all.find(x => x.user === me.user);
-            const t = all.find(x => x.use
+            const t = all.find(x => x.user === target);
+
+            const idx = m.following.indexOf(target);
+            if(idx === -1) { m.following.push(target); t.followers.push(me.user); }
+            else { m.following.splice(idx, 1); t.followers.splice(t.followers.indexOf(me.user), 1); }
+
+            localStorage.setItem('sw_users_final', JSON.stringify(all));
+            globalSearch(document.querySelector('input[onkeyup="globalSearch(this.value)"]').value);
+            sync();
+        }
+
+        // --- UI ---
+        function openFollowModal(type) {
+            const modal = document.getElementById('follow-modal');
+            const list = document.getElementById('modal-list');
+            document.getElementById('modal-title').innerText = type.toUpperCase();
+            modal.classList.remove('hidden');
+
+            const all = JSON.parse(localStorage.getItem('sw_users_final') || "[]");
+            const ids = type === 'followers' ? me.followers : me.following;
+            if(!ids || ids.length === 0) return list.innerHTML = `<p class="text-center py-10 font-bold text-slate-300 italic">No connections found.</p>`;
+            
+            const matches = all.filter(u => ids.includes(u.user));
+            list.innerHTML = matches.map(u => `
+                <div class="flex items-center space-x-4 p-4 bg-slate-50 rounded-3xl border border-white">
+                    <img src="${u.dp}" class="w-12 h-12 rounded-2xl object-cover border">
+                    <div>
+                        <p class="font-black text-sm">${u.name}</p>
+                        <p class="text-[10px] text-blue-500 font-bold">@${u.user}</p>
+                    </div>
+                </div>`).join('');
+        }
+        function closeModal() { document.getElementById('follow-modal').classList.add('hidden'); }
+
+        function renderGrid(posts) {
+            const grid = document.getElementById('profile-grid');
+            grid.innerHTML = posts.map(p => p.img ? `<img src="${p.img}" class="w-full aspect-square object-cover rounded-3xl border shadow-sm">` : `<div class="aspect-square bg-slate-50 border rounded-3xl p-4 text-[10px] flex items-center justify-center text-center italic text-slate-300 overflow-hidden">${p.txt}</div>`).join('');
+        }
+
+        function showTab(t, b) {
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active-tab'));
+            document.querySelectorAll('nav button').forEach(x => { x.classList.remove('nav-active'); x.classList.add('text-slate-300'); });
+            document.getElementById('tab-' + t).classList.add('active-tab');
+            if(b) b.classList.add('nav-active');
+            if(t === 'feed') renderWall();
+            if(t === 'profile') sync();
+        }
+
+        function logout() { localStorage.removeItem('sw_sess_final'); location.reload(); }
+        function forceReset() { if(confirm("Mita dein sab kuch?")) { localStorage.clear(); location.reload(); } }
+    </script>
+</body>
+</html>
