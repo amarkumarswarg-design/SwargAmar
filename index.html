@@ -12,9 +12,7 @@
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         .nav-active { color: #1877F2; border-top: 3px solid #1877F2; }
         .btn-active:active { transform: scale(0.95); opacity: 0.8; }
-        /* Hide scrollbar for stories */
         .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
 <body class="bg-gray-100 font-sans mb-20 overflow-x-hidden">
@@ -22,29 +20,23 @@
     <div id="auth-screen" class="min-h-screen bg-white flex items-center justify-center p-6">
         <div class="w-full max-w-sm">
             <h1 class="text-6xl font-black text-blue-600 text-center mb-2 italic">Swarg</h1>
-            <p class="text-center text-gray-400 mb-10 font-medium">Aapka Apna Social World</p>
-
             <div id="login-form" class="space-y-4">
                 <input type="text" id="log-user" placeholder="Username" class="w-full p-4 bg-gray-50 border rounded-2xl outline-none">
                 <input type="password" id="log-pass" placeholder="Password" class="w-full p-4 bg-gray-50 border rounded-2xl outline-none">
-                <button type="button" onclick="handleLogin()" class="w-full bg-blue-600 text-white font-bold py-4 rounded-2xl shadow-lg btn-active">Login Karein</button>
-                <p class="text-center text-sm pt-6">Account nahi hai? <span onclick="toggleAuth(true)" class="text-blue-600 font-bold cursor-pointer">Register Karein</span></p>
+                <button onclick="handleLogin()" class="w-full bg-blue-600 text-white font-bold py-4 rounded-2xl shadow-lg btn-active">Login</button>
+                <p class="text-center text-sm pt-6">Naya account? <span onclick="toggleAuth(true)" class="text-blue-600 font-bold cursor-pointer">Register</span></p>
             </div>
-
             <div id="register-form" class="hidden space-y-3">
-                <h2 class="text-2xl font-bold text-gray-800">Register</h2>
+                <h2 class="text-2xl font-bold">Register</h2>
                 <input type="text" id="reg-name" placeholder="Pura Naam" class="w-full p-4 bg-gray-50 border rounded-xl outline-none">
-                <input type="text" id="reg-user" placeholder="Username (Unique)" class="w-full p-4 bg-gray-50 border rounded-xl outline-none">
+                <input type="text" id="reg-user" placeholder="Username" class="w-full p-4 bg-gray-50 border rounded-xl outline-none">
                 <input type="password" id="reg-pass" placeholder="Password" class="w-full p-4 bg-gray-50 border rounded-xl outline-none">
-                <input type="date" id="reg-dob" class="w-full p-4 bg-gray-50 border rounded-xl outline-none">
-                
                 <div class="p-4 border-2 border-dashed border-blue-200 rounded-xl text-center bg-blue-50 relative">
-                    <p id="dp-status" class="text-xs text-blue-600 font-bold">Photo Chunein</p>
+                    <p id="dp-status" class="text-xs text-blue-600 font-bold">Profile Photo Chunein</p>
                     <input type="file" id="reg-dp" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer">
                 </div>
-
-                <button type="button" onclick="handleRegister()" class="w-full bg-green-600 text-white font-bold py-4 rounded-2xl shadow-lg btn-active">Sign Up</button>
-                <p class="text-center text-sm pt-4 text-blue-600 font-bold cursor-pointer" onclick="toggleAuth(false)">Wapas Login</p>
+                <button onclick="handleRegister()" class="w-full bg-green-600 text-white font-bold py-4 rounded-2xl shadow-lg btn-active">Sign Up</button>
+                <p onclick="toggleAuth(false)" class="text-center text-sm pt-4 text-blue-600 font-bold cursor-pointer">Wapas Login</p>
             </div>
         </div>
     </div>
@@ -59,64 +51,43 @@
         </header>
 
         <main class="max-w-md mx-auto">
-            
             <div id="tab-feed" class="tab-content active-tab p-4">
-                <div class="flex space-x-3 overflow-x-auto no-scrollbar mb-6">
-                    <div class="flex-shrink-0 text-center">
-                        <div class="w-16 h-16 rounded-full border-2 border-blue-600 p-1 bg-white relative">
+                <div class="flex space-x-3 overflow-x-auto no-scrollbar mb-6" id="story-list">
+                    <div class="flex-shrink-0 text-center relative">
+                        <div class="w-16 h-16 rounded-full border-2 border-blue-600 p-1 bg-white overflow-hidden">
                             <img id="story-my-dp" class="w-full h-full rounded-full object-cover">
-                            <div class="absolute bottom-0 right-0 bg-blue-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs border-2 border-white">+</div>
                         </div>
-                        <p class="text-[10px] mt-1 font-bold">Aapki Story</p>
+                        <input type="file" id="story-upload" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer" onchange="uploadStory(this)">
+                        <div class="absolute bottom-5 right-0 bg-blue-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs border-2 border-white">+</div>
+                        <p class="text-[10px] mt-1 font-bold">Add Story</p>
                     </div>
-                    <div id="other-stories" class="flex space-x-3">
-                        </div>
-                </div>
+                    </div>
 
                 <div class="bg-white p-4 rounded-xl shadow-sm mb-6">
                     <div class="flex items-center space-x-3 mb-3">
-                        <img id="post-input-dp" class="w-10 h-10 rounded-full border bg-gray-200">
-                        <textarea id="post-text" placeholder="Swarg mein kya chal raha hai?" class="bg-gray-100 rounded-2xl w-full p-3 text-sm outline-none resize-none" rows="2"></textarea>
+                        <img id="post-input-dp" class="w-10 h-10 rounded-full border">
+                        <textarea id="post-text" placeholder="Kya chal raha hai?" class="bg-gray-100 rounded-2xl w-full p-3 text-sm outline-none resize-none"></textarea>
                     </div>
-                    <div class="flex justify-between items-center border-t pt-3">
-                        <div class="flex space-x-4 text-gray-500 text-sm pl-2">
-                            <i class="fas fa-image text-green-500"></i>
-                            <i class="fas fa-video text-red-500"></i>
-                            <i class="fas fa-smile text-yellow-500"></i>
-                        </div>
-                        <button onclick="createPost()" class="bg-blue-600 text-white px-6 py-2 rounded-full font-bold text-sm btn-active">Post</button>
-                    </div>
+                    <button onclick="createPost()" class="w-full bg-blue-600 text-white py-2 rounded-xl font-bold btn-active">Post Karein</button>
                 </div>
 
-                <div id="news-feed" class="space-y-4">
-                    </div>
+                <div id="news-feed" class="space-y-4"></div>
             </div>
 
             <div id="tab-search" class="tab-content p-4">
-                <h2 class="text-xl font-bold mb-4">Doston ko dhoondhein</h2>
-                <div class="relative mb-6">
-                    <i class="fas fa-search absolute left-4 top-4 text-gray-400"></i>
-                    <input type="text" onkeyup="searchUsers(this.value)" placeholder="Username search karein..." class="w-full p-4 pl-12 bg-white border rounded-2xl outline-none shadow-sm">
-                </div>
-                <div id="search-results" class="space-y-3">
-                    <p class="text-center text-gray-400 text-sm">Naye doston ka naam likhein...</p>
-                </div>
+                <input type="text" onkeyup="searchUsers(this.value)" placeholder="Doston ko dhoondhein..." class="w-full p-4 bg-white border rounded-2xl outline-none shadow-sm mb-6">
+                <div id="search-results" class="space-y-3"></div>
             </div>
 
             <div id="tab-profile" class="tab-content">
-                <div class="bg-white rounded-b-3xl shadow-sm overflow-hidden text-center pb-10">
-                    <div class="h-32 bg-gradient-to-r from-blue-500 to-blue-700"></div>
-                    <img id="prof-dp" class="w-32 h-32 rounded-full border-4 border-white mx-auto -mt-16 bg-gray-200 object-cover">
+                <div class="bg-white rounded-b-3xl text-center pb-10">
+                    <div class="h-24 bg-blue-600"></div>
+                    <img id="prof-dp" class="w-32 h-32 rounded-full border-4 border-white mx-auto -mt-16 object-cover bg-gray-200">
                     <h2 id="prof-name" class="text-2xl font-black mt-4">...</h2>
                     <p id="prof-user" class="text-blue-600 font-bold">@username</p>
-                    <div class="flex justify-center space-x-8 mt-6 border-t pt-6">
-                        <div><p class="font-black">120</p><p class="text-xs text-gray-400">Dost</p></div>
-                        <div><p class="font-black" id="my-post-count">0</p><p class="text-xs text-gray-400">Posts</p></div>
-                    </div>
-                    <button onclick="logout()" class="mt-8 bg-red-100 text-red-600 px-10 py-3 rounded-2xl font-bold btn-active">Logout</button>
+                    <button onclick="logout()" class="mt-8 bg-red-100 text-red-600 px-10 py-3 rounded-2xl font-bold">Logout</button>
                 </div>
             </div>
-
         </main>
 
         <nav class="fixed bottom-0 w-full bg-white border-t flex justify-around p-2 z-50 shadow-2xl">
@@ -130,7 +101,7 @@
         let selectedDP = "";
         let currentUser = null;
 
-        window.onload = function() {
+        window.onload = () => {
             const session = localStorage.getItem('swarg_session');
             if(session) launchApp(JSON.parse(session));
         };
@@ -140,166 +111,117 @@
             document.getElementById('register-form').classList.toggle('hidden', !show);
         }
 
-        document.getElementById('reg-dp').onchange = function(e) {
+        document.getElementById('reg-dp').onchange = (e) => {
             const reader = new FileReader();
-            reader.onload = (f) => {
-                selectedDP = f.target.result;
-                document.getElementById('dp-status').innerText = "✅ Photo Ready!";
-            };
+            reader.onload = (f) => { selectedDP = f.target.result; document.getElementById('dp-status').innerText = "✅ Done"; };
             reader.readAsDataURL(e.target.files[0]);
         };
 
         function handleRegister() {
-            const name = document.getElementById('reg-name').value.trim();
-            const user = document.getElementById('reg-user').value.trim().toLowerCase();
-            const pass = document.getElementById('reg-pass').value.trim();
-            const dob = document.getElementById('reg-dob').value;
+            const name = document.getElementById('reg-name').value;
+            const user = document.getElementById('reg-user').value.toLowerCase();
+            const pass = document.getElementById('reg-pass').value;
+            if(!name || !user || !pass) return alert("Fill all!");
 
-            if(!name || !user || !pass) return alert("Details bharo!");
+            let directory = JSON.parse(localStorage.getItem('swarg_directory') || "[]");
+            if(directory.some(u => u.user === user)) return alert("User exists!");
 
-            // Add to User Directory for search
-            let userList = JSON.parse(localStorage.getItem('swarg_directory') || "[]");
-            if(userList.includes(user)) return alert("Username pehle se hai!");
-
-            const data = { name, user, pass, dob, dp: selectedDP };
-            localStorage.setItem('u_' + user, JSON.stringify(data));
+            const userData = { name, user, pass, dp: selectedDP };
+            localStorage.setItem('u_' + user, JSON.stringify(userData));
+            directory.push({name, user, dp: selectedDP});
+            localStorage.setItem('swarg_directory', JSON.stringify(directory));
             
-            userList.push(user);
-            localStorage.setItem('swarg_directory', JSON.stringify(userList));
-            
-            alert("Swarg mein swagat hai! Login karein.");
+            alert("Registered! Login now.");
             toggleAuth(false);
         }
 
         function handleLogin() {
-            const user = document.getElementById('log-user').value.trim().toLowerCase();
-            const pass = document.getElementById('log-pass').value.trim();
-
+            const user = document.getElementById('log-user').value.toLowerCase();
+            const pass = document.getElementById('log-pass').value;
             const stored = localStorage.getItem('u_' + user);
             if(stored) {
                 const data = JSON.parse(stored);
                 if(data.pass === pass) {
                     localStorage.setItem('swarg_session', JSON.stringify(data));
                     launchApp(data);
-                } else alert("Galat Password!");
-            } else alert("User nahi mila!");
+                } else alert("Wrong Pass!");
+            } else alert("No User!");
         }
 
         function launchApp(data) {
             currentUser = data;
-            document.getElementById('auth-screen').style.display = 'none';
+            document.getElementById('auth-screen').classList.add('hidden');
             document.getElementById('main-app').classList.remove('hidden');
-            
             document.getElementById('prof-name').innerText = data.name;
             document.getElementById('prof-user').innerText = "@" + data.user;
-            
             const img = data.dp || "https://ui-avatars.com/api/?name=" + data.name;
-            document.getElementById('nav-dp')?.remove(); // Cleanup
+            document.getElementById('story-my-dp').src = img;
             document.getElementById('post-input-dp').src = img;
             document.getElementById('prof-dp').src = img;
-            document.getElementById('story-my-dp').src = img;
-
             renderFeed();
-            loadDummyStories();
+            renderStories();
         }
 
-        // --- FEED LOGIC ---
-        function createPost() {
-            const text = document.getElementById('post-text').value.trim();
-            if(!text) return alert("Kuch likhiye!");
-
-            const newPost = {
-                id: Date.now(),
-                authorName: currentUser.name,
-                authorUser: currentUser.user,
-                authorDP: currentUser.dp || "https://ui-avatars.com/api/?name=" + currentUser.name,
-                content: text,
-                time: "Abhi abhi"
+        function uploadStory(input) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                let stories = JSON.parse(localStorage.getItem('swarg_stories') || "[]");
+                stories.unshift({ user: currentUser.user, name: currentUser.name, img: e.target.result, dp: currentUser.dp });
+                localStorage.setItem('swarg_stories', JSON.stringify(stories));
+                renderStories();
             };
+            reader.readAsDataURL(input.files[0]);
+        }
 
-            let posts = JSON.parse(localStorage.getItem('swarg_all_posts') || "[]");
-            posts.unshift(newPost);
-            localStorage.setItem('swarg_all_posts', JSON.stringify(posts));
-            
+        function renderStories() {
+            const list = document.getElementById('story-list');
+            const myStoryBtn = list.firstElementChild.outerHTML;
+            const stories = JSON.parse(localStorage.getItem('swarg_stories') || "[]");
+            list.innerHTML = myStoryBtn + stories.map(s => `
+                <div class="flex-shrink-0 text-center">
+                    <div class="w-16 h-16 rounded-full border-2 border-pink-500 p-1 bg-white">
+                        <img src="${s.img}" class="w-full h-full rounded-full object-cover">
+                    </div>
+                    <p class="text-[10px] mt-1 font-medium">${s.name}</p>
+                </div>
+            `).join('');
+        }
+
+        function createPost() {
+            const text = document.getElementById('post-text').value;
+            if(!text) return;
+            let posts = JSON.parse(localStorage.getItem('swarg_posts') || "[]");
+            posts.unshift({ name: currentUser.name, user: currentUser.user, text, dp: currentUser.dp || "https://ui-avatars.com/api/?name="+currentUser.name });
+            localStorage.setItem('swarg_posts', JSON.stringify(posts));
             document.getElementById('post-text').value = "";
             renderFeed();
         }
 
         function renderFeed() {
-            const feedDiv = document.getElementById('news-feed');
-            const posts = JSON.parse(localStorage.getItem('swarg_all_posts') || "[]");
-            
-            document.getElementById('my-post-count').innerText = posts.filter(p => p.authorUser === currentUser.user).length;
-
-            if(posts.length === 0) {
-                feedDiv.innerHTML = `<div class="text-center p-10 text-gray-400">Yahan abhi kuch nahi hai. Pehla post karein!</div>`;
-                return;
-            }
-
-            feedDiv.innerHTML = posts.map(post => `
-                <div class="bg-white rounded-xl shadow-sm border p-4">
-                    <div class="flex justify-between items-center mb-4">
-                        <div class="flex items-center space-x-3">
-                            <img src="${post.authorDP}" class="w-10 h-10 rounded-full border">
-                            <div>
-                                <h4 class="font-bold text-sm leading-tight">${post.authorName}</h4>
-                                <p class="text-[10px] text-gray-400">@${post.authorUser} • ${post.time}</p>
-                            </div>
-                        </div>
-                        <i class="fas fa-ellipsis-h text-gray-400"></i>
+            const feed = document.getElementById('news-feed');
+            const posts = JSON.parse(localStorage.getItem('swarg_posts') || "[]");
+            feed.innerHTML = posts.map(p => `
+                <div class="bg-white p-4 rounded-xl shadow-sm border">
+                    <div class="flex items-center space-x-3 mb-3">
+                        <img src="${p.dp}" class="w-10 h-10 rounded-full border">
+                        <div><h4 class="font-bold text-sm">${p.name}</h4><p class="text-[10px] text-gray-400">@${p.user}</p></div>
                     </div>
-                    <p class="text-gray-800 text-sm mb-4">${post.content}</p>
-                    <div class="flex justify-between border-t pt-3 text-gray-500 text-sm font-bold">
-                        <button onclick="this.classList.toggle('text-blue-600')"><i class="far fa-thumbs-up mr-2"></i> Like</button>
-                        <button><i class="far fa-comment mr-2"></i> Comment</button>
-                        <button><i class="fas fa-share mr-2"></i> Share</button>
-                    </div>
+                    <p class="text-sm">${p.text}</p>
                 </div>
             `).join('');
         }
 
-        // --- SEARCH LOGIC ---
-        function searchUsers(query) {
-            const resultsDiv = document.getElementById('search-results');
-            if(!query) {
-                resultsDiv.innerHTML = '<p class="text-center text-gray-400 text-sm">Naye doston ka naam likhein...</p>';
-                return;
-            }
-
-            const directory = JSON.parse(localStorage.getItem('swarg_directory') || "[]");
-            const filtered = directory.filter(u => u.includes(query.toLowerCase()));
-
-            if(filtered.length === 0) {
-                resultsDiv.innerHTML = '<p class="text-center text-gray-400 text-sm">Koi nahi mila!</p>';
-                return;
-            }
-
-            resultsDiv.innerHTML = filtered.map(u => {
-                const uData = JSON.parse(localStorage.getItem('u_' + u));
-                return `
-                    <div class="flex items-center justify-between bg-white p-3 rounded-2xl shadow-sm">
-                        <div class="flex items-center space-x-3">
-                            <img src="${uData.dp || 'https://ui-avatars.com/api/?name='+uData.name}" class="w-12 h-12 rounded-full border">
-                            <div>
-                                <p class="font-bold text-sm">${uData.name}</p>
-                                <p class="text-xs text-blue-600">@${uData.user}</p>
-                            </div>
-                        </div>
-                        <button class="bg-blue-600 text-white text-xs px-4 py-2 rounded-xl font-bold">Follow</button>
+        function searchUsers(q) {
+            const res = document.getElementById('search-results');
+            if(!q) return res.innerHTML = "";
+            const dir = JSON.parse(localStorage.getItem('swarg_directory') || "[]");
+            const filtered = dir.filter(u => u.user.includes(q.toLowerCase()) || u.name.toLowerCase().includes(q.toLowerCase()));
+            res.innerHTML = filtered.map(u => `
+                <div class="flex items-center justify-between bg-white p-3 rounded-xl shadow-sm">
+                    <div class="flex items-center space-x-3">
+                        <img src="${u.dp || 'https://ui-avatars.com/api/?name='+u.name}" class="w-10 h-10 rounded-full">
+                        <div><p class="font-bold text-sm">${u.name}</p><p class="text-xs text-blue-600">@${u.user}</p></div>
                     </div>
-                `;
-            }).join('');
-        }
-
-        function loadDummyStories() {
-            const storyDiv = document.getElementById('other-stories');
-            const dummy = ["Arjun", "Zoya", "Rohan", "Sneha"];
-            storyDiv.innerHTML = dummy.map(name => `
-                <div class="flex-shrink-0 text-center">
-                    <div class="w-16 h-16 rounded-full border-2 border-pink-500 p-1 bg-white">
-                        <img src="https://i.pravatar.cc/150?u=${name}" class="w-full h-full rounded-full object-cover">
-                    </div>
-                    <p class="text-[10px] mt-1 text-gray-600 font-medium">${name}</p>
                 </div>
             `).join('');
         }
@@ -311,11 +233,7 @@
             b.className = 'nav-active p-3';
         }
 
-        function logout() {
-            localStorage.removeItem('swarg_session');
-            location.reload();
-        }
+        function logout() { localStorage.removeItem('swarg_session'); location.reload(); }
     </script>
 </body>
-                                                                                                                                          </html>
-                                                                                                                                          
+</html>
