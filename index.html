@@ -3,146 +3,146 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Swarg - Connection Heaven</title>
+    <title>Swarg - Ultimate Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f4f7f6; color: #1c1e21; -webkit-tap-highlight-color: transparent; }
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap');
+        body { font-family: 'Outfit', sans-serif; background: #f0f2f5; -webkit-tap-highlight-color: transparent; }
         .tab-content { display: none; }
-        .active-tab { display: block; animation: fadeInUp 0.4s ease; }
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .nav-active { color: #1877F2; border-top: 3px solid #1877F2; transform: translateY(-2px); }
-        .owner-badge { background: linear-gradient(45deg, #1877F2, #7c3aed); color: white; padding: 2px 10px; border-radius: 20px; font-size: 10px; font-weight: 800; text-transform: uppercase; border: 2px solid white; }
-        .blue-tick { color: #1D9BF0; margin-left: 4px; }
+        .active-tab { display: block; animation: fadeInUp 0.4s ease-out; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        .nav-active { color: #1877F2; position: relative; }
+        .nav-active::after { content: ''; position: absolute; bottom: -5px; left: 50%; transform: translateX(-50%); width: 6px; height: 6px; background: #1877F2; border-radius: 50%; }
+        .owner-tag { background: linear-gradient(45deg, #1877F2, #7c3aed); color: white; padding: 3px 12px; border-radius: 20px; font-size: 11px; font-weight: 800; text-transform: uppercase; border: 2px solid white; box-shadow: 0 4px 10px rgba(24,119,242,0.3); }
+        .blue-tick { color: #1d9bf0; margin-left: 5px; font-size: 1.1em; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
-        .glass-header { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); }
     </style>
 </head>
-<body class="mb-20">
+<body class="mb-20 overflow-x-hidden">
 
-    <div id="auth-screen" class="fixed inset-0 bg-white flex items-center justify-center p-6 z-[100]">
+    <div id="auth-screen" class="fixed inset-0 bg-white flex items-center justify-center p-6 z-[200]">
         <div class="w-full max-w-sm">
             <h1 class="text-7xl font-black text-blue-600 text-center mb-2 italic tracking-tighter">Swarg</h1>
-            <p class="text-center text-slate-400 mb-10 font-bold uppercase tracking-widest text-xs">Aapka Apna Social World</p>
+            <p class="text-center text-slate-400 mb-10 font-bold uppercase tracking-widest text-xs italic">By Amar Kumar</p>
 
             <div id="login-form" class="space-y-4">
-                <input type="text" id="l-user" placeholder="Username" class="w-full p-5 bg-slate-50 border rounded-3xl outline-none focus:ring-4 ring-blue-100 transition-all">
-                <input type="password" id="l-pass" placeholder="Password" class="w-full p-5 bg-slate-50 border rounded-3xl outline-none focus:ring-4 ring-blue-100 transition-all">
+                <input type="text" id="l-user" placeholder="Username" class="w-full p-5 bg-slate-50 border-none rounded-3xl outline-none focus:ring-4 ring-blue-100 transition-all">
+                <input type="password" id="l-pass" placeholder="Password" class="w-full p-5 bg-slate-50 border-none rounded-3xl outline-none focus:ring-4 ring-blue-100 transition-all">
                 <button onclick="handleLogin()" class="w-full bg-blue-600 text-white font-black py-5 rounded-3xl shadow-xl active:scale-95 transition">Login</button>
-                <p class="text-center text-sm pt-6 text-slate-500">Naya account? <span onclick="toggleAuth(true)" class="text-blue-600 font-extrabold cursor-pointer">Register</span></p>
-                <button onclick="fullReset()" class="w-full mt-10 text-[10px] text-slate-300 font-black uppercase border-t pt-4">Emergency Reset</button>
+                <p class="text-center text-sm pt-6 text-slate-500 font-medium">New Here? <span onclick="toggleAuth(true)" class="text-blue-600 font-extrabold cursor-pointer">Register Account</span></p>
+                <button onclick="forceReset()" class="w-full mt-20 text-[10px] text-slate-300 font-black border-t pt-4">Emergency Reset All Data</button>
             </div>
 
             <div id="reg-form" class="hidden space-y-4">
-                <h2 class="text-3xl font-black text-slate-800 tracking-tight">Join Swarg</h2>
+                <h2 class="text-3xl font-black text-slate-800">Create Swarg ID</h2>
                 <input type="text" id="r-name" placeholder="Full Name" class="w-full p-4 bg-slate-50 border rounded-2xl outline-none">
                 <input type="text" id="r-user" placeholder="Unique Username" class="w-full p-4 bg-slate-50 border rounded-2xl outline-none">
-                <input type="password" id="r-pass" placeholder="Create Password" class="w-full p-4 bg-slate-50 border rounded-2xl outline-none">
-                <div class="p-4 border-2 border-dashed border-blue-200 rounded-2xl text-center bg-blue-50 relative">
-                    <p id="dp-status" class="text-xs text-blue-600 font-bold">Profile Photo Chunein</p>
+                <input type="password" id="r-pass" placeholder="Password" class="w-full p-4 bg-slate-50 border rounded-2xl outline-none">
+                <div class="p-6 border-2 border-dashed border-blue-200 rounded-2xl text-center bg-blue-50 relative">
+                    <p id="dp-status" class="text-sm text-blue-600 font-bold italic"><i class="fas fa-camera mr-2"></i>Select Profile Photo</p>
                     <input type="file" id="r-dp" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer">
                 </div>
                 <button onclick="handleRegister()" class="w-full bg-green-600 text-white font-black py-5 rounded-3xl shadow-lg active:scale-95 transition">Sign Up</button>
-                <p onclick="toggleAuth(false)" class="text-center text-sm pt-4 text-blue-600 font-bold cursor-pointer underline">Back to Login</p>
+                <p onclick="toggleAuth(false)" class="text-center text-sm pt-4 text-blue-600 font-bold cursor-pointer underline">Wapas Login</p>
             </div>
         </div>
     </div>
 
     <div id="main-app" class="hidden">
-        <header class="glass-header sticky top-0 z-50 p-4 flex justify-between items-center px-6 border-b">
+        <header class="bg-white/90 backdrop-blur-md sticky top-0 z-50 p-4 flex justify-between items-center px-6 border-b">
             <h2 class="text-3xl font-black text-blue-600 italic tracking-tighter">Swarg</h2>
             <div class="flex items-center space-x-5 text-slate-700">
                 <i class="fas fa-bell text-xl"></i>
-                <i class="fab fa-facebook-messenger text-2xl" onclick="alert('Messenger feature is coming!')"></i>
+                <i class="fab fa-facebook-messenger text-2xl" onclick="alert('Chatting coming soon!')"></i>
             </div>
         </header>
 
         <main class="max-w-md mx-auto">
             
-            <div id="tab-feed" class="tab-content active-tab p-4 space-y-6">
-                <div class="bg-white p-5 rounded-[2.5rem] shadow-sm border">
+            <div id="tab-feed" class="tab-content active-tab p-4 pb-24 space-y-6">
+                <div class="bg-white p-5 rounded-[2.5rem] shadow-sm border border-slate-100">
                     <div class="flex items-start space-x-4 mb-4">
-                        <img id="composer-dp" class="w-12 h-12 rounded-2xl object-cover shadow-sm bg-slate-100">
-                        <textarea id="post-input" placeholder="Swarg mein kya naya hai?" class="w-full p-2 text-lg font-medium outline-none resize-none" rows="2"></textarea>
+                        <img id="composer-dp" class="w-12 h-12 rounded-2xl object-cover shadow-sm bg-slate-200">
+                        <textarea id="post-input" placeholder="Swarg mein kya chal raha hai?" class="w-full p-2 text-lg font-medium outline-none resize-none placeholder:text-slate-300" rows="2"></textarea>
                     </div>
-                    <div id="post-pre-box" class="hidden mb-4 relative">
-                        <img id="post-pre-img" class="w-full h-48 object-cover rounded-3xl border">
-                        <button onclick="cancelPostImg()" class="absolute top-2 right-2 bg-black/50 text-white w-8 h-8 rounded-full">&times;</button>
+                    <div id="pre-box" class="hidden mb-4 relative">
+                        <img id="pre-img" class="w-full h-48 object-cover rounded-3xl">
+                        <button onclick="clearPre()" class="absolute top-2 right-2 bg-black/50 text-white w-8 h-8 rounded-full">&times;</button>
                     </div>
                     <div class="flex justify-between items-center border-t pt-4">
-                        <label class="flex items-center space-x-2 text-slate-500 font-bold cursor-pointer px-4 py-2 hover:bg-slate-50 rounded-xl transition">
-                            <i class="fas fa-image text-xl text-blue-500"></i>
+                        <label class="flex items-center space-x-2 text-slate-500 font-bold cursor-pointer hover:bg-slate-50 p-2 px-4 rounded-xl transition">
+                            <i class="fas fa-images text-xl text-blue-500"></i>
                             <span class="text-sm">Photo</span>
-                            <input type="file" accept="image/*" class="hidden" onchange="previewImg(this)">
+                            <input type="file" accept="image/*" class="hidden" onchange="previewPost(this)">
                         </label>
-                        <button onclick="createPost()" class="bg-blue-600 text-white px-8 py-3 rounded-2xl font-black text-sm shadow-lg active:scale-95 transition-all">Post</button>
+                        <button onclick="createPost()" class="bg-blue-600 text-white px-8 py-3 rounded-2xl font-black text-sm active:scale-95 transition-all shadow-lg shadow-blue-100">Post</button>
                     </div>
                 </div>
 
-                <div id="global-feed" class="space-y-6 pb-20"></div>
+                <div id="global-wall" class="space-y-6"></div>
             </div>
 
-            <div id="tab-search" class="tab-content p-6">
+            <div id="tab-search" class="tab-content p-6 pb-24">
                 <h2 class="text-4xl font-black mb-6 tracking-tighter">Discover</h2>
                 <div class="relative mb-8">
                     <i class="fas fa-search absolute left-5 top-5 text-slate-300"></i>
-                    <input type="text" onkeyup="globalSearch(this.value)" placeholder="Doston ko dhoondhein..." class="w-full p-5 pl-14 bg-white border rounded-3xl outline-none shadow-sm">
+                    <input type="text" onkeyup="globalSearch(this.value)" placeholder="Search for angels & owners..." class="w-full p-5 pl-14 bg-white border border-slate-100 rounded-3xl outline-none shadow-xl shadow-slate-100">
                 </div>
                 <div id="search-list" class="space-y-4"></div>
             </div>
 
             <div id="tab-profile" class="tab-content">
-                <div class="bg-white rounded-b-[4rem] shadow-xl overflow-hidden pb-12 text-center relative border-b">
-                    <div class="h-32 bg-blue-600 relative overflow-hidden"></div>
-                    <div class="relative w-36 h-36 mx-auto -mt-20">
-                        <img id="prof-dp" class="w-full h-full rounded-[3rem] border-8 border-white object-cover shadow-xl bg-slate-100">
-                        <div id="owner-badge-main" class="hidden absolute -bottom-2 left-1/2 -translate-x-1/2 owner-badge whitespace-nowrap">Swarg Owner</div>
+                <div class="bg-white rounded-b-[3.5rem] shadow-xl overflow-hidden pb-12 text-center relative border-b">
+                    <div class="h-32 bg-gradient-to-br from-blue-600 to-blue-900"></div>
+                    <div class="relative w-40 h-40 mx-auto -mt-20">
+                        <img id="prof-dp" class="w-full h-full rounded-[3rem] border-8 border-white object-cover shadow-2xl bg-slate-100">
+                        <div id="owner-badge" class="hidden absolute -bottom-3 left-1/2 -translate-x-1/2 owner-tag whitespace-nowrap italic">Swarg Owner</div>
                     </div>
-                    <h2 class="text-2xl font-black mt-6 tracking-tighter flex items-center justify-center">
+
+                    <h2 class="text-3xl font-black mt-8 tracking-tighter flex items-center justify-center">
                         <span id="prof-name">...</span>
                         <i id="prof-tick" class="fas fa-check-circle blue-tick hidden"></i>
                     </h2>
-                    <p id="prof-handle" class="text-blue-600 font-bold mb-8">@username</p>
+                    <p id="prof-user" class="text-blue-600 font-bold mb-8 italic">@username</p>
                     
                     <div class="flex justify-around px-8 border-y py-6 my-6 border-slate-50">
-                        <div><p class="text-2xl font-black" id="stat-posts">0</p><p class="text-[10px] text-slate-400 font-black uppercase">Posts</p></div>
-                        <div onclick="openFollowModal('followers')" class="cursor-pointer"><p class="text-2xl font-black" id="stat-followers">0</p><p class="text-[10px] text-slate-400 font-black uppercase">Followers</p></div>
-                        <div onclick="openFollowModal('following')" class="cursor-pointer"><p class="text-2xl font-black" id="stat-following">0</p><p class="text-[10px] text-slate-400 font-black uppercase">Following</p></div>
+                        <div><p class="text-2xl font-black" id="stat-posts">0</p><p class="text-[10px] text-slate-400 font-black uppercase tracking-widest">Posts</p></div>
+                        <div onclick="openFollowModal('followers')"><p class="text-2xl font-black" id="stat-followers">0</p><p class="text-[10px] text-slate-400 font-black uppercase tracking-widest">Followers</p></div>
+                        <div onclick="openFollowModal('following')"><p class="text-2xl font-black" id="stat-following">0</p><p class="text-[10px] text-slate-400 font-black uppercase tracking-widest">Following</p></div>
                     </div>
                     
-                    <button onclick="logout()" class="mt-4 text-red-500 font-black text-xs uppercase tracking-widest">Sign Out</button>
+                    <button onclick="logout()" class="mt-4 text-red-500 font-black text-xs uppercase tracking-tighter hover:underline">Log Out Safely</button>
                 </div>
-                <div class="p-4 grid grid-cols-2 gap-3 mb-24" id="profile-grid"></div>
+                <div class="p-4 grid grid-cols-2 gap-3 pb-24" id="profile-grid"></div>
             </div>
         </main>
 
         <nav class="fixed bottom-0 w-full bg-white/90 backdrop-blur-md border-t flex justify-around p-4 z-40 rounded-t-[2.5rem] shadow-2xl">
-            <button onclick="showTab('feed', this)" class="nav-active p-2"><i class="fas fa-house text-2xl"></i></button>
-            <button onclick="showTab('search', this)" class="text-slate-300 p-2"><i class="fas fa-compass text-2xl"></i></button>
-            <button onclick="showTab('profile', this)" class="text-slate-300 p-2"><i class="fas fa-user-circle text-2xl"></i></button>
+            <button onclick="showTab('feed', this)" class="nav-active"><i class="fas fa-home-alt text-2xl"></i></button>
+            <button onclick="showTab('search', this)" class="text-slate-300"><i class="fas fa-compass text-2xl"></i></button>
+            <button onclick="showTab('profile', this)" class="text-slate-300"><i class="fas fa-user-circle text-2xl"></i></button>
         </nav>
     </div>
 
-    <div id="follow-modal" class="hidden fixed inset-0 z-[150] bg-black/50 backdrop-blur-sm flex items-end">
+    <div id="follow-modal" class="hidden fixed inset-0 z-[150] bg-black/60 flex items-end backdrop-blur-sm">
         <div class="bg-white w-full max-h-[70vh] rounded-t-[3rem] p-8 overflow-y-auto no-scrollbar">
             <div class="flex justify-between items-center mb-6">
-                <h3 class="text-2xl font-black" id="follow-title">List</h3>
-                <i class="fas fa-times text-xl text-slate-300" onclick="closeFollowModal()"></i>
+                <h3 class="text-2xl font-black" id="modal-title">List</h3>
+                <i class="fas fa-times text-slate-300 text-xl" onclick="closeModal()"></i>
             </div>
-            <div id="follow-list" class="space-y-4"></div>
+            <div id="modal-list" class="space-y-4"></div>
         </div>
     </div>
 
     <script>
-        // --- CENTRAL DATA CORE ---
         let me = null;
-        let pTempImg = "";
-        let rTempDP = "";
+        let tempDP = "";
+        let postImg = "";
 
         window.onload = () => {
-            const session = localStorage.getItem('sw_sess_v2');
-            if(session) launchApp(JSON.parse(session));
+            const s = localStorage.getItem('sw_sess_final');
+            if(s) launch(JSON.parse(s));
         };
 
         function toggleAuth(r) {
@@ -152,118 +152,113 @@
 
         document.getElementById('r-dp').onchange = (e) => {
             const r = new FileReader();
-            r.onload = (f) => { rTempDP = f.target.result; document.getElementById('dp-status').innerText = "✅ DP Locked"; };
+            r.onload = (f) => { tempDP = f.target.result; document.getElementById('dp-status').innerText = "✅ DP Locked"; };
             r.readAsDataURL(e.target.files[0]);
         };
 
-        // --- AUTH ENGINE ---
+        // --- AUTH ---
         function handleRegister() {
             const n = document.getElementById('r-name').value.trim();
             const u = document.getElementById('r-user').value.toLowerCase().trim();
             const p = document.getElementById('r-pass').value.trim();
-            if(!n || !u || !p) return alert("Details bhariye!");
+            if(!n || !u || !p) return alert("All fields are mandatory!");
 
-            let users = JSON.parse(localStorage.getItem('sw_users_v2') || "[]");
-            if(users.some(x => x.user === u)) return alert("Username busy hai!");
+            let users = JSON.parse(localStorage.getItem('sw_users_final') || "[]");
+            if(users.some(x => x.user === u)) return alert("Username already taken!");
 
-            const newUser = { name: n, user: u, pass: p, dp: rTempDP || "https://ui-avatars.com/api/?name="+n, followers: [], following: [] };
-            users.push(newUser);
-            localStorage.setItem('sw_users_v2', JSON.stringify(users));
-            alert("Account ban gaya! Login karein.");
+            const userData = { name: n, user: u, pass: p, dp: tempDP || "https://ui-avatars.com/api/?name="+n, followers: [], following: [] };
+            users.push(userData);
+            localStorage.setItem('sw_users_final', JSON.stringify(users));
+            alert("Registered! Now log in.");
             toggleAuth(false);
         }
 
         function handleLogin() {
             const u = document.getElementById('l-user').value.toLowerCase().trim();
             const p = document.getElementById('l-pass').value.trim();
-            const users = JSON.parse(localStorage.getItem('sw_users_v2') || "[]");
+            const users = JSON.parse(localStorage.getItem('sw_users_final') || "[]");
             const found = users.find(x => x.user === u && x.pass === p);
             if(found) {
-                localStorage.setItem('sw_sess_v2', JSON.stringify(found));
-                launchApp(found);
-            } else alert("Galat details!");
+                localStorage.setItem('sw_sess_final', JSON.stringify(found));
+                launch(found);
+            } else alert("Invalid username or password!");
         }
 
-        function launchApp(data) {
+        function launch(data) {
             me = data;
             document.getElementById('auth-screen').classList.add('hidden');
             document.getElementById('main-app').classList.remove('hidden');
-            syncData();
-            renderGlobalFeed();
+            sync();
+            renderWall();
         }
 
-        function syncData() {
-            // Get fresh data from storage
-            const allUsers = JSON.parse(localStorage.getItem('sw_users_v2') || "[]");
-            me = allUsers.find(u => u.user === me.user);
+        function sync() {
+            // Re-fetch me from global list for stats
+            const all = JSON.parse(localStorage.getItem('sw_users_final') || "[]");
+            me = all.find(x => x.user === me.user);
             
             document.getElementById('prof-name').innerText = me.name;
-            document.getElementById('prof-handle').innerText = "@" + me.user;
+            document.getElementById('prof-user').innerText = "@" + me.user;
             document.getElementById('prof-dp').src = me.dp;
             document.getElementById('composer-dp').src = me.dp;
-            
+
             const isAmar = me.user.toLowerCase() === 'amar';
-            document.getElementById('owner-badge-main').classList.toggle('hidden', !isAmar);
+            document.getElementById('owner-badge').classList.toggle('hidden', !isAmar);
             document.getElementById('prof-tick').classList.toggle('hidden', !isAmar);
 
-            const allPosts = JSON.parse(localStorage.getItem('sw_posts_v2') || "[]");
-            document.getElementById('stat-posts').innerText = allPosts.filter(p => p.user === me.user).length;
+            const posts = JSON.parse(localStorage.getItem('sw_posts_final') || "[]");
+            document.getElementById('stat-posts').innerText = posts.filter(p => p.user === me.user).length;
             document.getElementById('stat-followers').innerText = (me.followers || []).length;
             document.getElementById('stat-following').innerText = (me.following || []).length;
-
-            renderProfileGrid(allPosts.filter(p => p.user === me.user));
+            
+            renderGrid(posts.filter(p => p.user === me.user));
         }
 
-        // --- POSTING ENGINE ---
-        function previewImg(i) {
+        // --- FEED ---
+        function previewPost(i) {
             const r = new FileReader();
-            r.onload = (e) => { 
-                pTempImg = e.target.result; 
-                document.getElementById('post-pre-img').src = pTempImg;
-                document.getElementById('post-pre-box').classList.remove('hidden');
-            };
+            r.onload = (e) => { postImg = e.target.result; document.getElementById('pre-img').src = postImg; document.getElementById('pre-box').classList.remove('hidden'); };
             r.readAsDataURL(i.files[0]);
         }
-
-        function cancelPostImg() { pTempImg = ""; document.getElementById('post-pre-box').classList.add('hidden'); }
+        function clearPre() { postImg = ""; document.getElementById('pre-box').classList.add('hidden'); }
 
         function createPost() {
             const txt = document.getElementById('post-input').value.trim();
-            if(!txt && !pTempImg) return;
-            let posts = JSON.parse(localStorage.getItem('sw_posts_v2') || "[]");
-            posts.unshift({ id: Date.now(), user: me.user, name: me.name, dp: me.dp, txt, img: pTempImg, likes: [] });
-            localStorage.setItem('sw_posts_v2', JSON.stringify(posts));
+            if(!txt && !postImg) return;
+            let posts = JSON.parse(localStorage.getItem('sw_posts_final') || "[]");
+            posts.unshift({ id: Date.now(), user: me.user, name: me.name, dp: me.dp, txt, img: postImg, likes: [] });
+            localStorage.setItem('sw_posts_final', JSON.stringify(posts));
             document.getElementById('post-input').value = "";
-            cancelPostImg();
-            renderGlobalFeed();
-            syncData();
+            clearPre();
+            renderWall();
+            sync();
         }
 
-        function renderGlobalFeed() {
-            const wall = document.getElementById('global-feed');
-            const posts = JSON.parse(localStorage.getItem('sw_posts_v2') || "[]");
+        function renderWall() {
+            const wall = document.getElementById('global-wall');
+            const posts = JSON.parse(localStorage.getItem('sw_posts_final') || "[]");
             if(posts.length === 0) {
-                wall.innerHTML = `<div class="p-10 text-center bg-white rounded-3xl border border-dashed text-slate-400 font-bold italic">Abhi Swarg khali hai... Pehla post karein!</div>`;
+                wall.innerHTML = `<div class="p-10 text-center bg-white rounded-3xl border-dashed border-2 border-slate-100 text-slate-300 font-bold italic">Swarg is quiet... Start a conversation.</div>`;
                 return;
             }
             wall.innerHTML = posts.map(p => {
                 const isAmar = p.user.toLowerCase() === 'amar';
                 const isLiked = (p.likes || []).includes(me.user);
                 return `
-                <div class="bg-white p-5 rounded-[2.5rem] border shadow-sm">
+                <div class="bg-white p-6 rounded-[2.5rem] shadow-sm border border-slate-50">
                     <div class="flex items-center justify-between mb-4">
                         <div class="flex items-center space-x-3">
-                            <img src="${p.dp}" class="w-11 h-11 rounded-2xl object-cover border">
+                            <img src="${p.dp}" class="w-12 h-12 rounded-2xl object-cover border">
                             <div>
                                 <h4 class="font-black text-sm flex items-center">${p.name} ${isAmar ? '<i class="fas fa-check-circle blue-tick"></i>' : ''}</h4>
                                 <p class="text-[10px] text-blue-500 font-bold uppercase tracking-widest">@${p.user} ${isAmar ? '• OWNER' : ''}</p>
                             </div>
                         </div>
-                        ${p.user === me.user ? `<i class="fas fa-trash-can text-slate-200" onclick="deletePost(${p.id})"></i>` : ''}
+                        ${p.user === me.user ? `<i class="fas fa-trash-alt text-slate-200" onclick="delPost(${p.id})"></i>` : ''}
                     </div>
-                    <p class="text-slate-700 font-medium mb-4">${p.txt}</p>
-                    ${p.img ? `<img src="${p.img}" class="w-full rounded-[2rem] border shadow-inner max-h-96 object-cover">` : ''}
-                    <div class="flex items-center space-x-6 mt-4 pt-4 border-t text-slate-400 font-bold text-xs">
+                    <p class="text-slate-700 font-medium mb-4 leading-relaxed">${p.txt}</p>
+                    ${p.img ? `<img src="${p.img}" class="w-full rounded-[2rem] border shadow-inner max-h-96 object-cover mb-2">` : ''}
+                    <div class="flex items-center space-x-6 mt-2 pt-4 border-t text-slate-400 font-bold text-xs">
                         <button onclick="handleLike(${p.id})" class="flex items-center space-x-2 ${isLiked ? 'text-red-500' : ''}">
                             <i class="${isLiked ? 'fas' : 'far'} fa-heart text-xl"></i><span>${(p.likes || []).length}</span>
                         </button>
@@ -273,113 +268,51 @@
         }
 
         function handleLike(id) {
-            let posts = JSON.parse(localStorage.getItem('sw_posts_v2') || "[]");
+            let posts = JSON.parse(localStorage.getItem('sw_posts_final') || "[]");
             const p = posts.find(x => x.id === id);
             const idx = p.likes.indexOf(me.user);
             if(idx === -1) p.likes.push(me.user); else p.likes.splice(idx, 1);
-            localStorage.setItem('sw_posts_v2', JSON.stringify(posts));
-            renderGlobalFeed();
+            localStorage.setItem('sw_posts_final', JSON.stringify(posts));
+            renderWall();
         }
 
-        function deletePost(id) {
-            let posts = JSON.parse(localStorage.getItem('sw_posts_v2') || "[]");
-            posts = posts.filter(p => p.id !== id);
-            localStorage.setItem('sw_posts_v2', JSON.stringify(posts));
-            renderGlobalFeed();
-            syncData();
+        function delPost(id) {
+            let posts = JSON.parse(localStorage.getItem('sw_posts_final') || "[]");
+            posts = posts.filter(x => x.id !== id);
+            localStorage.setItem('sw_posts_final', JSON.stringify(posts));
+            renderWall();
+            sync();
         }
 
-        // --- DISCOVER ENGINE ---
+        // --- DISCOVER ---
         function globalSearch(q) {
             const list = document.getElementById('search-list');
             if(!q.trim()) return list.innerHTML = "";
-            const users = JSON.parse(localStorage.getItem('sw_users_v2') || "[]");
+            const users = JSON.parse(localStorage.getItem('sw_users_final') || "[]");
             const filter = users.filter(u => u.user.includes(q.toLowerCase()) || u.name.toLowerCase().includes(q.toLowerCase()));
             
             list.innerHTML = filter.map(u => {
-                const isFollowing = (me.following || []).includes(u.user);
+                const isFollow = (me.following || []).includes(u.user);
                 const isAmar = u.user.toLowerCase() === 'amar';
                 return `
-                <div class="flex items-center justify-between bg-white p-4 rounded-3xl border shadow-lg shadow-blue-50/50">
-                    <div class="flex items-center space-x-3">
-                        <img src="${u.dp}" class="w-12 h-12 rounded-2xl object-cover">
+                <div class="flex items-center justify-between bg-white p-5 rounded-[2.5rem] border shadow-lg shadow-blue-50/20 transition hover:scale-[1.02]">
+                    <div class="flex items-center space-x-4">
+                        <img src="${u.dp}" class="w-14 h-14 rounded-2xl object-cover border">
                         <div>
                             <p class="font-black text-sm">${u.name} ${isAmar ? '<i class="fas fa-check-circle blue-tick"></i>' : ''}</p>
-                            <p class="text-xs text-blue-500 font-bold italic">@${u.user}</p>
+                            <p class="text-xs text-blue-500 font-bold">@${u.user}</p>
                         </div>
                     </div>
                     ${u.user !== me.user ? `
-                        <button onclick="handleFollow('${u.user}')" class="${isFollowing ? 'bg-slate-100 text-slate-400' : 'bg-blue-600 text-white shadow-lg shadow-blue-100'} px-5 py-2 rounded-2xl font-black text-xs">
-                            ${isFollowing ? 'Unfollow' : 'Follow'}
+                        <button onclick="handleFollow('${u.user}')" class="${isFollow ? 'bg-slate-100 text-slate-400' : 'bg-blue-600 text-white shadow-lg'} px-6 py-2 rounded-2xl font-black text-xs uppercase tracking-tighter">
+                            ${isFollow ? 'Unfollow' : 'Follow'}
                         </button>
-                    ` : '<span class="text-[10px] font-black text-slate-200 uppercase pr-4 italic">You</span>'}
+                    ` : '<span class="text-[10px] font-black text-slate-300 uppercase italic pr-4">You</span>'}
                 </div>`;
             }).join('');
         }
 
-        function handleFollow(targetU) {
-            let all = JSON.parse(localStorage.getItem('sw_users_v2') || "[]");
-            const meObj = all.find(x => x.user === me.user);
-            const targetObj = all.find(x => x.user === targetU);
-
-            const idx = meObj.following.indexOf(targetU);
-            if(idx === -1) {
-                meObj.following.indexOf(targetU);
-            if(idx === -1) {
-                meObj.following.push(targetU);
-                targetObj.followers.push(me.user);
-            } else {
-                meObj.following.splice(idx, 1);
-                targetObj.followers.splice(targetObj.followers.indexOf(me.user), 1);
-            }
-
-            localStorage.setItem('sw_users_v2', JSON.stringify(all));
-            globalSearch(document.querySelector('input[onkeyup="globalSearch(this.value)"]').value);
-            syncData();
-        }
-
-        // --- FOLLOW LIST ENGINE ---
-        function openFollowModal(type) {
-            const modal = document.getElementById('follow-modal');
-            const list = document.getElementById('follow-list');
-            const title = document.getElementById('follow-title');
-            title.innerText = type === 'followers' ? 'Followers' : 'Following';
-            modal.classList.remove('hidden');
-
-            const all = JSON.parse(localStorage.getItem('sw_users_v2') || "[]");
-            const ids = type === 'followers' ? me.followers : me.following;
-            
-            if(!ids || ids.length === 0) return list.innerHTML = `<p class="text-center text-slate-300 font-bold py-10">Koi nahi mila...</p>`;
-            
-            const matches = all.filter(u => ids.includes(u.user));
-            list.innerHTML = matches.map(u => `
-                <div class="flex items-center space-x-4 p-4 bg-slate-50 rounded-3xl">
-                    <img src="${u.dp}" class="w-12 h-12 rounded-2xl object-cover border">
-                    <div>
-                        <p class="font-black text-sm">${u.name}</p>
-                        <p class="text-[10px] text-blue-500 font-bold uppercase tracking-widest">@${u.user}</p>
-                    </div>
-                </div>`).join('');
-        }
-
-        function closeFollowModal() { document.getElementById('follow-modal').classList.add('hidden'); }
-
-        function renderProfileGrid(posts) {
-            const grid = document.getElementById('profile-grid');
-            grid.innerHTML = posts.map(p => p.img ? `<img src="${p.img}" class="w-full aspect-square object-cover rounded-3xl border shadow-sm">` : `<div class="aspect-square bg-slate-50 border rounded-3xl p-4 text-[10px] flex items-center justify-center text-center italic text-slate-400 overflow-hidden">${p.txt}</div>`).join('');
-        }
-
-        function showTab(t, b) {
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active-tab'));
-            document.querySelectorAll('nav button').forEach(b => { b.classList.remove('nav-active'); b.classList.add('text-slate-300'); });
-            document.getElementById('tab-' + t).classList.add('active-tab');
-            if(b) b.classList.add('nav-active');
-            if(t === 'feed') renderGlobalFeed();
-            if(t === 'profile') syncData();
-        }
-
-        function logout() { localStorage.removeItem('sw_sess_v2'); location.reload(); }
-        function fullReset() { if(confirm("Mita dein sab kuch?")) { localStorage.clear(); location.reload(); } }
-    </script>
-</body>
-</html>
+        function handleFollow(target) {
+            let all = JSON.parse(localStorage.getItem('sw_users_final') || "[]");
+            const m = all.find(x => x.user === me.user);
+            const t = all.find(x => x.use
