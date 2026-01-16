@@ -3,193 +3,149 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Swarg - Supreme Social</title>
+    <title>Swarg - Premium Professional</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap');
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; color: #1e293b; -webkit-tap-highlight-color: transparent; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f0f2f5; color: #1c1e21; -webkit-tap-highlight-color: transparent; }
         .tab-content { display: none; }
-        .active-tab { display: block; animation: slideUp 0.4s ease; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        .nav-active { color: #1877F2; transform: scale(1.1); transition: 0.3s; }
+        .active-tab { display: block; animation: slideUp 0.3s ease; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        .nav-active { color: #1877F2; border-top: 4px solid #1877F2; transform: translateY(-2px); transition: 0.3s; }
         .glass { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(15px); border-bottom: 1px solid rgba(0,0,0,0.05); }
-        
-        /* Attractive Blue Tick */
-        .blue-tick-premium {
-            color: #1d9bf0;
-            margin-left: 4px;
-            filter: drop-shadow(0 0 2px rgba(29, 155, 240, 0.5));
-            animation: pulse-badge 2s infinite;
-        }
-        @keyframes pulse-badge { 0% { opacity: 0.8; } 50% { opacity: 1; } 100% { opacity: 0.8; } }
-
-        /* VIP Badge */
-        .owner-vip-card {
-            background: linear-gradient(135deg, #1e293b 0%, #1877F2 100%);
-            color: white;
-            border-radius: 2.5rem;
-            padding: 20px;
-            box-shadow: 0 20px 40px rgba(24, 119, 242, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
+        .blue-tick-pro { color: #1d9bf0; margin-left: 6px; font-size: 16px; filter: drop-shadow(0 0 1px rgba(29,155,240,0.5)); }
+        .owner-vip-badge { background: linear-gradient(45deg, #1877F2, #7c3aed); color: white; padding: 2px 12px; border-radius: 20px; font-size: 10px; font-weight: 900; text-transform: uppercase; border: 2px solid white; box-shadow: 0 4px 10px rgba(24,119,242,0.3); }
         .no-scrollbar::-webkit-scrollbar { display: none; }
-        .shimmer { animation: shimmer 2s infinite linear; background: linear-gradient(to right, #f6f7f8 0%, #edeef1 20%, #f6f7f8 40%, #f6f7f8 100%); background-size: 800px 104px; }
     </style>
 </head>
-<body class="mb-24">
+<body class="mb-24 overflow-x-hidden">
 
     <div id="auth-screen" class="fixed inset-0 bg-white flex items-center justify-center p-6 z-[200]">
         <div class="w-full max-w-sm">
-            <h1 class="text-8xl font-black text-blue-600 text-center mb-2 italic tracking-tighter">Swarg</h1>
-            <p class="text-center text-slate-400 mb-12 font-bold uppercase tracking-widest text-[10px]">Supreme Social Network</p>
-
+            <h1 class="text-7xl font-black text-blue-600 text-center mb-2 italic tracking-tighter">Swarg</h1>
             <div id="login-form" class="space-y-4">
-                <input type="text" id="l-user" placeholder="Username" class="w-full p-5 bg-slate-50 border-none rounded-[2rem] outline-none focus:ring-4 ring-blue-50 transition-all">
-                <input type="password" id="l-pass" placeholder="Password" class="w-full p-5 bg-slate-50 border-none rounded-[2rem] outline-none focus:ring-4 ring-blue-50 transition-all">
-                <button onclick="handleLogin()" class="w-full bg-blue-600 text-white font-black py-5 rounded-[2rem] shadow-xl active:scale-95 transition">Login</button>
-                <p class="text-center text-sm pt-6 text-slate-500 font-medium">New? <span onclick="toggleAuth(true)" class="text-blue-600 font-extrabold cursor-pointer">Join Heaven</span></p>
-                <button onclick="localStorage.clear(); location.reload();" class="w-full mt-10 text-[10px] text-slate-300 font-black tracking-widest">RESET MEMORY</button>
+                <input type="text" id="l-user" placeholder="Username" class="w-full p-5 bg-slate-50 border rounded-3xl outline-none focus:ring-4 ring-blue-50">
+                <input type="password" id="l-pass" placeholder="Password" class="w-full p-5 bg-slate-50 border rounded-3xl outline-none focus:ring-4 ring-blue-50">
+                <button onclick="doLogin()" class="w-full bg-blue-600 text-white font-black py-5 rounded-3xl shadow-xl active:scale-95 transition">Login</button>
+                <p class="text-center text-sm pt-6 text-slate-500 font-medium">New? <span onclick="toggleAuth(true)" class="text-blue-600 font-extrabold cursor-pointer">Register Account</span></p>
+                <button onclick="localStorage.clear(); location.reload();" class="w-full mt-20 text-[10px] text-slate-300 font-black border-t pt-4">FORCE RESET APP</button>
             </div>
-
             <div id="reg-form" class="hidden space-y-4">
-                <h2 class="text-3xl font-black text-slate-800 tracking-tighter">Create Identity</h2>
+                <h2 class="text-3xl font-black text-slate-800 tracking-tight">Create ID</h2>
                 <input type="text" id="r-name" placeholder="Full Name" class="w-full p-4 bg-slate-50 border rounded-2xl outline-none">
                 <input type="text" id="r-user" placeholder="Username" class="w-full p-4 bg-slate-50 border rounded-2xl outline-none">
                 <input type="password" id="r-pass" placeholder="Password" class="w-full p-4 bg-slate-50 border rounded-2xl outline-none">
                 <div class="p-6 border-2 border-dashed border-blue-200 rounded-3xl text-center bg-blue-50 relative">
-                    <p id="dp-status" class="text-xs text-blue-600 font-bold italic">Upload DP</p>
+                    <p id="dp-status" class="text-sm text-blue-600 font-bold italic">Photo Select Karein</p>
                     <input type="file" id="r-dp" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer">
                 </div>
-                <button onclick="handleRegister()" class="w-full bg-green-600 text-white font-black py-5 rounded-[2rem] shadow-lg active:scale-95 transition">Register</button>
+                <button onclick="doRegister()" class="w-full bg-green-600 text-white font-black py-5 rounded-3xl shadow-lg active:scale-95 transition">Register</button>
                 <p onclick="toggleAuth(false)" class="text-center text-sm pt-4 text-blue-600 font-bold cursor-pointer underline">Back to Login</p>
             </div>
         </div>
     </div>
 
     <div id="main-app" class="hidden min-h-screen">
-        <header class="glass sticky top-0 z-50 p-4 flex justify-between items-center px-6">
+        <header class="glass sticky top-0 z-50 p-4 flex justify-between items-center px-6 border-b">
             <h2 class="text-3xl font-black text-blue-600 italic tracking-tighter">Swarg</h2>
-            <div class="flex items-center space-x-6 text-slate-700">
+            <div class="flex items-center space-x-5 text-slate-700">
                 <i class="fas fa-search text-xl" onclick="showTab('search')"></i>
                 <i class="fab fa-facebook-messenger text-2xl"></i>
             </div>
         </header>
 
         <main class="max-w-md mx-auto p-4 space-y-6">
-            
             <div id="tab-feed" class="tab-content active-tab pb-20 space-y-6">
-                
-                <div id="discover-amar" class="hidden owner-vip-card animate-pulse">
+                <div id="card-discover-amar" class="hidden bg-gradient-to-br from-slate-900 to-blue-700 p-6 rounded-[2.5rem] shadow-2xl text-white">
                     <div class="flex items-center space-x-4 mb-6">
-                        <div class="relative">
-                            <img id="vip-amar-dp" class="w-20 h-20 rounded-[1.8rem] border-4 border-white/20 object-cover shadow-2xl">
-                            <div class="absolute -bottom-2 -right-2 bg-blue-500 text-white p-1.5 rounded-full border-4 border-[#1e293b]">
-                                <i class="fas fa-crown text-[10px]"></i>
-                            </div>
-                        </div>
+                        <img id="disc-amar-dp" class="w-20 h-20 rounded-[1.8rem] border-4 border-white/20 object-cover shadow-2xl bg-white">
                         <div>
-                            <h4 class="font-black text-xl flex items-center">Amar Kumar <i class="fas fa-check-circle blue-tick-premium"></i></h4>
-                            <p class="text-white/60 text-xs font-bold tracking-widest">SWARG CREATOR</p>
+                            <h4 class="font-black text-xl flex items-center">Amar Kumar <i class="fas fa-check-circle blue-tick-pro"></i></h4>
+                            <p class="text-blue-200 text-[10px] font-black uppercase tracking-widest">App Owner & Founder</p>
                         </div>
                     </div>
                     <div class="flex space-x-3">
-                        <button onclick="followAmar()" id="amar-follow-btn" class="flex-1 bg-white text-blue-600 py-3 rounded-2xl font-black text-sm shadow-xl active:scale-95 transition">Follow</button>
-                        <button class="bg-white/10 text-white p-3 px-5 rounded-2xl backdrop-blur-md font-black text-sm active:scale-95 transition">Message</button>
+                        <button onclick="followAmar()" id="btn-amar-follow" class="flex-1 bg-white text-blue-700 py-3 rounded-2xl font-black text-sm active:scale-95 transition">Follow</button>
+                        <button onclick="alert('Starting message with Amar...')" class="bg-white/10 text-white p-3 px-5 rounded-2xl backdrop-blur-md font-black text-sm active:scale-95 transition">Message</button>
                     </div>
                 </div>
 
-                <div class="bg-white p-5 rounded-[2.5rem] shadow-sm border border-slate-100">
-                    <div class="flex items-start space-x-4">
-                        <img id="comp-dp" class="w-12 h-12 rounded-2xl object-cover border">
-                        <textarea id="post-input" placeholder="Post to Swarg..." class="w-full p-2 text-lg font-medium outline-none resize-none placeholder:text-slate-300" rows="2"></textarea>
+                <div class="bg-white p-6 rounded-[2.5rem] shadow-sm border border-slate-100">
+                    <div class="flex items-start space-x-4 mb-4">
+                        <img id="comp-avatar" class="w-12 h-12 rounded-2xl object-cover shadow-sm bg-slate-100">
+                        <textarea id="p-input" placeholder="Post something to Swarg..." class="w-full p-2 text-lg font-medium outline-none resize-none placeholder:text-slate-300" rows="2"></textarea>
                     </div>
-                    <div class="flex justify-between items-center border-t mt-4 pt-4 px-2">
+                    <div class="flex justify-between items-center border-t pt-4">
                         <span class="text-blue-600 font-bold text-sm"><i class="fas fa-image mr-1"></i>Photo</span>
-                        <button onclick="createPost()" class="bg-blue-600 text-white px-8 py-2.5 rounded-2xl font-black shadow-lg">Post</button>
+                        <button onclick="handlePost()" class="bg-blue-600 text-white px-8 py-2.5 rounded-2xl font-black text-sm shadow-lg shadow-blue-100 active:scale-95 transition">Post</button>
                     </div>
                 </div>
 
-                <div id="global-wall" class="space-y-6"></div>
+                <div id="wall-posts" class="space-y-6"></div>
             </div>
 
             <div id="tab-search" class="tab-content p-2">
-                <h2 class="text-4xl font-black mb-8 tracking-tighter italic">Search</h2>
-                <input type="text" onkeyup="globalSearch(this.value)" placeholder="Search angels..." class="w-full p-5 bg-white border border-slate-100 rounded-[2rem] outline-none shadow-xl shadow-blue-100/20 mb-8">
+                <h2 class="text-4xl font-black mb-8 tracking-tighter italic">Discover</h2>
+                <input type="text" id="global-search" onkeyup="doSearch(this.value)" placeholder="Search friends & creators..." class="w-full p-5 bg-white border border-slate-100 rounded-[2.5rem] outline-none shadow-xl shadow-blue-100/10 mb-8">
                 <div id="search-list" class="space-y-4"></div>
             </div>
 
             <div id="tab-profile" class="tab-content">
-                <div class="bg-white rounded-[3rem] shadow-2xl overflow-hidden pb-12 text-center relative border border-slate-50">
-                    <div class="h-36 bg-gradient-to-br from-blue-600 to-indigo-900"></div>
+                <div class="bg-white rounded-b-[4rem] shadow-xl overflow-hidden pb-12 text-center relative border border-slate-50">
+                    <div class="h-32 bg-gradient-to-br from-blue-600 to-indigo-900"></div>
                     <div class="relative w-44 h-44 mx-auto -mt-24">
-                        <img id="prof-img" class="w-full h-full rounded-[3.5rem] border-8 border-white object-cover shadow-2xl bg-slate-100">
-                        <div id="owner-tag" class="hidden absolute -bottom-3 left-1/2 -translate-x-1/2 bg-blue-600 text-white px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border-4 border-white shadow-lg">Swarg Owner</div>
+                        <img id="prof-dp" class="w-full h-full rounded-[3.5rem] border-8 border-white object-cover shadow-2xl bg-slate-50">
+                        <div id="amar-badge" class="hidden absolute -bottom-3 left-1/2 -translate-x-1/2 owner-vip-badge whitespace-nowrap italic">Swarg Owner</div>
                     </div>
-                    <h2 class="text-3xl font-black mt-8 tracking-tighter flex items-center justify-center italic">
-                        <span id="prof-n">Amar Kumar</span>
-                        <i id="prof-tick" class="fas fa-check-circle blue-tick-premium hidden"></i>
+                    <h2 class="text-3xl font-black mt-8 flex items-center justify-center italic tracking-tighter">
+                        <span id="prof-name">Name</span>
+                        <i id="prof-tick" class="fas fa-check-circle blue-tick-pro hidden"></i>
                     </h2>
-                    <p id="prof-u" class="text-blue-600 font-extrabold mb-8 italic tracking-wide">@amar</p>
+                    <p id="prof-handle" class="text-blue-600 font-bold mb-8 italic">@user</p>
                     <div class="flex justify-around px-8 border-y py-8 my-6 border-slate-50">
-                        <div><p class="text-2xl font-black" id="p-count">0</p><p class="text-[10px] text-slate-400 font-black uppercase tracking-widest">Posts</p></div>
-                        <div class="cursor-pointer" onclick="openList('followers')"><p class="text-2xl font-black text-blue-600" id="f-count">0</p><p class="text-[10px] text-slate-400 font-black uppercase tracking-widest">Followers</p></div>
-                        <div class="cursor-pointer" onclick="openList('following')"><p class="text-2xl font-black" id="fg-count">0</p><p class="text-[10px] text-slate-400 font-black uppercase tracking-widest">Following</p></div>
+                        <div><p class="text-2xl font-black text-slate-800" id="cnt-p">0</p><p class="text-[10px] text-slate-400 font-black uppercase">Posts</p></div>
+                        <div class="cursor-pointer" onclick="openFollowList('followers')"><p class="text-2xl font-black text-blue-600" id="cnt-f">0</p><p class="text-[10px] text-slate-400 font-black uppercase">Followers</p></div>
+                        <div class="cursor-pointer" onclick="openFollowList('following')"><p class="text-2xl font-black text-slate-800" id="cnt-fg">0</p><p class="text-[10px] text-slate-400 font-black uppercase">Following</p></div>
                     </div>
-                    <button onclick="logout()" class="mt-4 text-red-500 font-black text-xs uppercase tracking-tighter underline">Logout</button>
+                    <button onclick="logout()" class="mt-4 text-red-500 font-black text-xs uppercase tracking-widest hover:underline">Logout Safely</button>
                 </div>
-                <div class="p-4 grid grid-cols-2 gap-4 mt-6" id="prof-grid"></div>
+                <div id="profile-grid" class="p-4 grid grid-cols-2 gap-4 mt-6 pb-24"></div>
             </div>
         </main>
 
         <nav class="fixed bottom-0 w-full glass flex justify-around p-5 z-40 rounded-t-[3rem] shadow-2xl">
             <button onclick="showTab('feed', this)" class="nav-active p-3"><i class="fas fa-home-alt text-2xl"></i></button>
-            <button onclick="showTab('search', this)" class="text-slate-300 p-3"><i class="fas fa-search text-2xl"></i></button>
+            <button onclick="showTab('search', this)" class="text-slate-300 p-3"><i class="fas fa-compass text-2xl"></i></button>
             <button onclick="showTab('profile', this)" class="text-slate-300 p-3"><i class="fas fa-user-circle text-2xl"></i></button>
         </nav>
     </div>
 
-    <div id="list-modal" class="hidden fixed inset-0 z-[150] bg-black/60 backdrop-blur-md flex items-end">
+    <div id="list-modal" class="hidden fixed inset-0 z-[150] bg-black/60 flex items-end">
         <div class="bg-white w-full max-h-[85vh] rounded-t-[4rem] p-8 overflow-y-auto no-scrollbar">
             <div class="flex justify-between items-center mb-8 border-b pb-4">
-                <h3 class="text-2xl font-black italic tracking-tighter" id="modal-title">List</h3>
-                <i class="fas fa-times text-2xl text-slate-300" onclick="closeModal()"></i>
+                <h3 class="text-3xl font-black tracking-tighter italic" id="modal-title">List</h3>
+                <i class="fas fa-times text-2xl text-slate-300 cursor-pointer" onclick="closeModal()"></i>
             </div>
-            <div id="modal-content" class="space-y-5 pb-10"></div>
+            <div id="modal-list" class="space-y-4"></div>
         </div>
     </div>
 
     <script>
+        // --- DATA ENGINE ---
         let me = null;
-        let rDP = "";
+        let regDP = "";
 
-        // 🔥 REAL VIP DATA (As requested) 🔥
-        const vipArmy = [
-            { n: "Elon Musk", u: "elonmusk", dp: "https://hips.hearstapps.com/hmg-prod/images/gettyimages-1229892983-square.jpg" },
-            { n: "Narendra Modi", u: "narendramodi", dp: "https://pbs.twimg.com/profile_images/1792120024765661184/55909wJ9_400x400.jpg" },
-            { n: "Donald Trump", u: "donaldtrump", dp: "https://www.whitehouse.gov/wp-content/uploads/2021/01/45_donald_trump.jpg" },
-            { n: "Cristiano Ronaldo", u: "cr7", dp: "https://i.pravatar.cc/150?u=cr7" },
-            { n: "Virat Kohli", u: "virat.kohli", dp: "https://i.pravatar.cc/150?u=kohli" },
-            { n: "Lionel Messi", u: "leomessi", dp: "https://i.pravatar.cc/150?u=messi" },
-            { n: "Ratan Tata", u: "ratantata", dp: "https://i.pravatar.cc/150?u=tata" },
-            { n: "Mukesh Ambani", u: "ambani", dp: "https://i.pravatar.cc/150?u=ambani" },
-            { n: "Amit Shah", u: "amitshah", dp: "https://i.pravatar.cc/150?u=shah" },
-            { n: "MS Dhoni", u: "msd", dp: "https://i.pravatar.cc/150?u=msd" }
-        ];
-
-        // 11M FAKE ACCOUNTS GENERATOR
-        const generateFakes = (count) => {
-            let fakes = [];
-            for(let i=1; i<=count; i++) {
-                fakes.push({ n: `Swarg Member ${i}`, u: `angel_${i}`, dp: `https://i.pravatar.cc/150?u=${i}` });
-            }
-            return fakes;
-        };
-
+        // Core Initialization
         window.onload = () => {
-            const s = localStorage.getItem('swarg_sess_final_v2');
-            if(s) launch(JSON.parse(s));
+            const saved = localStorage.getItem('swarg_sess_vFinal');
+            if(saved) launchApp(JSON.parse(saved));
+            
+            document.getElementById('r-dp').onchange = (e) => {
+                const r = new FileReader();
+                r.onload = (f) => { regDP = f.target.result; document.getElementById('dp-status').innerText = "✅ DP Locked"; };
+                r.readAsDataURL(e.target.files[0]);
+            };
         };
 
         function toggleAuth(r) {
@@ -197,39 +153,32 @@
             document.getElementById('reg-form').classList.toggle('hidden', !r);
         }
 
-        document.getElementById('r-dp').onchange = (e) => {
-            const r = new FileReader();
-            r.onload = (f) => { rDP = f.target.result; document.getElementById('dp-status').innerText = "✅ Image Fixed"; };
-            r.readAsDataURL(e.target.files[0]);
-        };
-
-        function handleRegister() {
+        function doRegister() {
             const n = document.getElementById('r-name').value.trim();
             const u = document.getElementById('r-user').value.toLowerCase().trim();
             const p = document.getElementById('r-pass').value.trim();
-            if(!n || !u || !p) return alert("Fill all!");
+            if(!n || !u || !p) return alert("Pura bhariye!");
 
-            let users = JSON.parse(localStorage.getItem('swarg_users_final_v2')) || [];
-            if(users.some(x => x.user === u)) return alert("Username taken!");
+            let users = JSON.parse(localStorage.getItem('swarg_users_vFinal') || "[]");
+            if(users.some(x => x.user === u)) return alert("Username busy hai!");
 
-            users.push({ name: n, user: u, pass: p, dp: rDP || `https://ui-avatars.com/api/?name=${n}` });
-            localStorage.setItem('swarg_users_final_v2', JSON.stringify(users));
-            alert("Registered! Login now.");
+            const newUser = { name: n, user: u, pass: p, dp: regDP || `https://ui-avatars.com/api/?name=${n}` };
+            users.push(newUser);
+            localStorage.setItem('swarg_users_vFinal', JSON.stringify(users));
+            alert("Registered! Login karein.");
             toggleAuth(false);
         }
 
-        function handleLogin() {
+        function doLogin() {
             const u = document.getElementById('l-user').value.toLowerCase().trim();
             const p = document.getElementById('l-pass').value.trim();
-            const users = JSON.parse(localStorage.getItem('swarg_users_final_v2')) || [];
+            const users = JSON.parse(localStorage.getItem('swarg_users_vFinal') || "[]");
             const found = users.find(x => x.user === u && x.pass === p);
-            if(found) { 
-                localStorage.setItem('swarg_sess_final_v2', JSON.stringify(found)); 
-                launch(found); 
-            } else alert("Invalid Login!");
+            if(found) { localStorage.setItem('swarg_sess_vFinal', JSON.stringify(found)); launchApp(found); }
+            else alert("Galat details!");
         }
 
-        function launch(data) {
+        function launchApp(data) {
             me = data;
             document.getElementById('auth-screen').classList.add('hidden');
             document.getElementById('main-app').classList.remove('hidden');
@@ -239,156 +188,115 @@
 
         function sync() {
             const isAmar = me.user.toLowerCase() === 'amar';
-            document.getElementById('prof-n').innerText = me.name;
-            document.getElementById('prof-u').innerText = "@" + me.user;
-            document.getElementById('prof-img').src = me.dp;
-            document.getElementById('comp-dp').src = me.dp;
+            document.getElementById('prof-name').innerText = me.name;
+            document.getElementById('prof-handle').innerText = "@" + me.user;
+            document.getElementById('prof-dp').src = me.dp;
+            document.getElementById('comp-avatar').src = me.dp;
             
-            document.getElementById('owner-tag').classList.toggle('hidden', !isAmar);
+            document.getElementById('amar-badge').classList.toggle('hidden', !isAmar);
             document.getElementById('prof-tick').classList.toggle('hidden', !isAmar);
 
-            // 🔥 SHOW @AMAR DISCOVER CARD 🔥
+            // 🔥 DISCOVER AMAR LOGIC 🔥
             if(!isAmar) {
-                document.getElementById('discover-amar').classList.remove('hidden');
-                // Get Amar's real DP if exists
-                const users = JSON.parse(localStorage.getItem('swarg_users_final_v2')) || [];
-                const amarObj = users.find(u => u.user === 'amar');
-                document.getElementById('vip-amar-dp').src = amarObj ? amarObj.dp : "https://i.pravatar.cc/150?u=amar";
+                const users = JSON.parse(localStorage.getItem('swarg_users_vFinal') || "[]");
+                const amarData = users.find(u => u.user === 'amar');
+                if(amarData) {
+                    document.getElementById('card-discover-amar').classList.remove('hidden');
+                    document.getElementById('disc-amar-dp').src = amarData.dp;
+                }
+            } else {
+                document.getElementById('card-discover-amar').classList.add('hidden');
             }
 
-            const posts = JSON.parse(localStorage.getItem('swarg_posts_final_v2')) || [];
-            document.getElementById('p-count').innerText = posts.filter(p => p.user === me.user).length;
+            const posts = JSON.parse(localStorage.getItem('swarg_posts_vFinal') || "[]");
+            document.getElementById('cnt-p').innerText = posts.filter(p => p.user === me.user).length;
             
-            // 🔥 AMAR SUPREME STATS 🔥
-            document.getElementById('stat-followers').innerText = isAmar ? "11M" : "0";
-            document.getElementById('stat-following').innerText = isAmar ? "5" : "0";
+            // Stats Hardcode for Amar
+            document.getElementById('cnt-f').innerText = isAmar ? "11M" : "0";
+            document.getElementById('cnt-fg').innerText = isAmar ? "5" : "0";
 
             renderGrid(posts.filter(p => p.user === me.user));
         }
 
-        function followAmar() {
-            const btn = document.getElementById('amar-follow-btn');
-            btn.innerText = "Following ✓";
-            btn.className = "flex-1 bg-green-500 text-white py-3 rounded-2xl font-black text-sm transition";
-            alert("You are now following the Creator!");
-        }
-
-        function createPost() {
-            const txt = document.getElementById('post-input').value.trim();
+        function handlePost() {
+            const txt = document.getElementById('p-input').value.trim();
             if(!txt) return;
-            let posts = JSON.parse(localStorage.getItem('swarg_posts_final_v2')) || [];
+            let posts = JSON.parse(localStorage.getItem('swarg_posts_vFinal') || "[]");
             posts.unshift({ id: Date.now(), user: me.user, name: me.name, dp: me.dp, txt });
-            localStorage.setItem('swarg_posts_final_v2', JSON.stringify(posts));
-            document.getElementById('post-input').value = "";
+            localStorage.setItem('swarg_posts_vFinal', JSON.stringify(posts));
+            document.getElementById('p-input').value = "";
             renderWall(); sync();
         }
 
         function renderWall() {
-            const wall = document.getElementById('global-wall');
-            const posts = JSON.parse(localStorage.getItem('swarg_posts_final_v2')) || [];
+            const wall = document.getElementById('wall-posts');
+            const posts = JSON.parse(localStorage.getItem('swarg_posts_vFinal') || "[]");
             wall.innerHTML = posts.map(p => `
-                <div class="bg-white p-6 rounded-[2.5rem] border shadow-sm border-slate-50">
+                <div class="bg-white p-6 rounded-[2.5rem] border border-slate-50 shadow-sm">
                     <div class="flex items-center space-x-3 mb-4">
                         <img src="${p.dp}" class="w-10 h-10 rounded-2xl object-cover border">
                         <div>
-                            <p class="font-black text-sm italic">${p.name} ${p.user === 'amar' ? '<i class="fas fa-check-circle blue-tick-premium"></i>' : ''}</p>
-                            <p class="text-[10px] text-blue-500 font-bold uppercase tracking-tighter">@${p.user}</p>
+                            <p class="font-black text-sm italic">${p.name} ${p.user === 'amar' ? '<i class="fas fa-check-circle blue-tick-pro"></i>' : ''}</p>
+                            <p class="text-[10px] text-blue-500 font-black uppercase tracking-tighter">@${p.user} ${p.user === 'amar' ? '• Owner' : ''}</p>
                         </div>
                     </div>
-                    <p class="text-slate-600 font-medium leading-relaxed">${p.txt}</p>
+                    <p class="text-slate-600 font-medium text-sm leading-relaxed">${p.txt}</p>
+                    <div class="flex space-x-6 mt-4 pt-4 border-t text-slate-300 text-[11px] font-bold uppercase tracking-widest">
+                        <span><i class="far fa-heart mr-1"></i> Like</span>
+                        <span><i class="far fa-comment-dots mr-1"></i> 0 Comments</span>
+                    </div>
                 </div>
             `).join('');
         }
 
-        function openList(type) {
-            const list = document.getElementById('modal-content');
+        function doSearch(q) {
+            const list = document.getElementById('search-list');
+            if(!q.trim()) return list.innerHTML = "";
+            const users = JSON.parse(localStorage.getItem('swarg_users_vFinal') || "[]");
+            const filter = users.filter(u => u.user.includes(q.toLowerCase()) || u.name.toLowerCase().includes(q.toLowerCase()));
+            list.innerHTML = filter.map(u => `
+                <div class="bg-white p-5 rounded-[2.5rem] border shadow-xl flex items-center justify-between">
+                    <div class="flex items-center space-x-4">
+                        <img src="${u.dp}" class="w-14 h-14 rounded-2xl object-cover border">
+                        <div>
+                            <p class="font-black text-lg italic">${u.name} ${u.user === 'amar' ? '<i class="fas fa-check-circle blue-tick-pro"></i>' : ''}</p>
+                            <p class="text-xs text-blue-500 font-bold italic">@${u.user}</p>
+                        </div>
+                    </div>
+                    <button class="bg-blue-600 text-white px-8 py-2.5 rounded-2xl font-black text-xs">VISIT</button>
+                </div>`).join('');
+        }
+
+        function openFollowList(type) {
+            const list = document.getElementById('modal-list');
             document.getElementById('modal-title').innerText = type.toUpperCase();
             document.getElementById('list-modal').classList.remove('hidden');
             list.innerHTML = "";
-
             const isAmar = me.user.toLowerCase() === 'amar';
 
             if(type === 'followers' && isAmar) {
-                // Show Real VIPs
-                list.innerHTML += vipArmy.map(v => `
+                // Real Names, placeholders for DPs to avoid broken links
+                const vips = [
+                    {n: "Elon Musk", u: "elonmusk"}, {n: "Narendra Modi", u: "narendramodi"}, {n: "Donald Trump", u: "trump"}, 
+                    {n: "Cristiano Ronaldo", u: "cr7"}, {n: "Virat Kohli", u: "kohli"}, {n: "MS Dhoni", u: "dhoni"}, 
+                    {n: "Mark Zuckerberg", u: "zuck"}, {n: "Lionel Messi", u: "messi"}, {n: "Bill Gates", u: "bill"}, {n: "MrBeast", u: "mrbeast"}
+                ];
+                list.innerHTML += vips.map(v => `
                     <div class="p-4 bg-slate-50 rounded-3xl flex items-center justify-between border-2 border-white shadow-sm">
                         <div class="flex items-center space-x-4">
-                            <img src="${v.dp}" class="w-14 h-14 rounded-2xl object-cover border-2 border-white">
+                            <img src="https://ui-avatars.com/api/?name=${v.n}&background=random" class="w-14 h-14 rounded-2xl object-cover">
                             <div>
-                                <p class="font-black text-lg italic">${v.n} <i class="fas fa-check-circle blue-tick-premium"></i></p>
+                                <p class="font-black text-lg italic">${v.n} <i class="fas fa-check-circle blue-tick-pro"></i></p>
                                 <p class="text-xs text-blue-500 font-bold">@${v.u}</p>
                             </div>
                         </div>
-                        <button class="text-slate-400 font-black text-[10px]">VISIT</button>
-                    </div>
-                `).join('');
-                // Show millions of others
-                list.innerHTML += generateFakes(15).map(f => `
-                    <div class="p-4 bg-slate-50 rounded-3xl flex items-center justify-between border-2 border-white shadow-sm">
-                        <div class="flex items-center space-x-4">
-                            <img src="${v.dp}" class="w-14 h-14 rounded-2xl object-cover border-2 border-white">
-                            <div>
-                                <p class="font-black text-lg italic">${v.n} <i class="fas fa-check-circle blue-tick-premium"></i></p>
-                                <p class="text-xs text-blue-500 font-bold">@${v.u}</p>
-                            </div>
-                        </div>
-                        <button class="text-slate-400 font-black text-[10px]">VISIT</button>
-                    </div>
-                `).join('');
-                // Show millions of others
-                list.innerHTML += generateFakes(15).map(f => `
-                    <div class="p-4 flex items-center space-x-4 grayscale opacity-50">
-                        <img src="${f.dp}" class="w-10 h-10 rounded-xl border shadow-inner">
-                        <div><p class="font-bold text-sm text-slate-800">${f.n}</p><p class="text-[10px] text-blue-400 font-bold tracking-widest uppercase">@${f.u}</p></div>
-                    </div>
-                `).join('');
-                list.innerHTML += `<p class="text-center py-6 font-black italic text-slate-300 tracking-tighter uppercase">+ 10,999,985 More Angels</p>`;
-            } else if(type === 'following' && isAmar) {
-                // Show 5 fake VIP following
-                list.innerHTML += vipArmy.slice(3, 8).map(v => `
-                    <div class="p-4 bg-slate-50 rounded-3xl flex items-center justify-between border-2 border-white">
-                        <div class="flex items-center space-x-4">
-                            <img src="${v.dp}" class="w-14 h-14 rounded-2xl object-cover border-2 border-white">
-                            <div><p class="font-black italic">${v.n} <i class="fas fa-check-circle blue-tick-premium"></i></p></div>
-                        </div>
-                        <button class="bg-blue-50 text-blue-600 px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest">FOLLOWING</button>
-                    </div>
-                `).join('');
-            } else {
-                list.innerHTML = `<p class="text-center py-10 font-bold text-slate-400 italic">No members found yet.</p>`;
-            }
-        }
-
-        function globalSearch(q) {
-            const res = document.getElementById('search-results');
-            if(!q.trim()) return res.innerHTML = "";
-            const users = JSON.parse(localStorage.getItem('swarg_users_final_v2')) || [];
-            const filter = users.filter(u => u.user.includes(q.toLowerCase()) || u.name.toLowerCase().includes(q.toLowerCase()));
-            res.innerHTML = filter.map(u => `
-                <div class="bg-white p-5 rounded-[2.5rem] border shadow-xl flex items-center justify-between">
-                    <div class="flex items-center space-x-4">
-                        <img src="${u.dp}" class="w-14 h-14 rounded-2xl object-cover border shadow-md">
-                        <div><p class="font-black text-lg italic">${u.name} ${u.user === 'amar' ? '<i class="fas fa-check-circle blue-tick-premium"></i>' : ''}</p><p class="text-xs text-blue-500 font-bold">@${u.user}</p></div>
-                    </div>
-                    <button class="bg-blue-600 text-white px-8 py-2.5 rounded-2xl font-black text-xs active:scale-95 transition">VISIT</button>
-                </div>
-            `).join('');
-        }
-
-        function closeModal() { document.getElementById('list-modal').classList.add('hidden'); }
-        function showTab(t, b) {
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active-tab'));
-            document.querySelectorAll('nav button').forEach(x => x.classList.remove('nav-active'));
-            document.getElementById('tab-' + t).classList.add('active-tab');
-            if(b) b.classList.add('nav-active');
-            if(t === 'feed') renderWall(); if(t === 'profile') sync();
-        }
-        function renderGrid(posts) {
-            const grid = document.getElementById('prof-grid');
-            grid.innerHTML = posts.map(p => `<div class="aspect-square bg-white border border-slate-100 rounded-3xl p-4 text-[10px] flex items-center justify-center text-center italic text-slate-400 overflow-hidden shadow-sm">${p.txt}</div>`).join('');
-        }
-        function logout() { localStorage.removeItem('swarg_sess_final_v2'); location.reload(); }
-    </script>
-</body>
-</html>
-                
+                    </div>`).join('');
+                // MASS FAKE ENGINE
+                for(let i=1; i<=15; i++) {
+                    list.innerHTML += `
+                    <div class="p-4 flex items-center space-x-4 opacity-50">
+                        <img src="https://ui-avatars.com/api/?name=User+${i}" class="w-10 h-10 rounded-xl">
+                        <div><p class="font-bold text-sm">Swarg Member ${i}</p><p class="text-[10px] text-slate-400">@angel_${i}</p></div>
+                    </div>`;
+                }
+                list.innerHTML += `<p class="text-center py-6 text-slate-300 font-bla
