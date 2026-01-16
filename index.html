@@ -1,180 +1,237 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Swarg - Social App</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Swarg - Social Media</title>
     <style>
-        .tab-content { display: none; }
-        .active-tab { display: block; animation: fadeIn 0.3s; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        .nav-active { color: #1877F2; border-top: 3px solid #1877F2; }
-        /* Touch feedback */
-        .btn-active:active { transform: scale(0.95); opacity: 0.8; }
+        /* General Styles */
+        body { font-family: Arial, sans-serif; background-color: #f0f2f5; margin: 0; }
+        .hidden { display: none !important; }
+        
+        /* Auth Styles (Login/Register) */
+        #auth-container { max-width: 400px; margin: 50px auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .tab-btn { width: 48%; padding: 10px; cursor: pointer; border: none; background: #ddd; }
+        .active-tab { background: #1877f2; color: white; }
+        input { width: 95%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 5px; }
+        .main-btn { width: 100%; padding: 12px; background: #1877f2; color: white; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+
+        /* Main App Styles */
+        header { background: #1877f2; color: white; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
+        .search-bar { padding: 8px; border-radius: 20px; border: none; width: 200px; }
+        
+        .container { max-width: 600px; margin: 20px auto; }
+        
+        /* Stories */
+        .stories { display: flex; overflow-x: auto; background: white; padding: 10px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #ddd; }
+        .story-card { text-align: center; margin-right: 15px; flex-shrink: 0; }
+        .story-img { width: 60px; height: 60px; border-radius: 50%; border: 3px solid #1877f2; object-fit: cover; }
+        .story-card p { font-size: 12px; margin-top: 5px; }
+
+        /* Create Post */
+        .create-post { background: white; padding: 15px; border-radius: 8px; border: 1px solid #ddd; margin-bottom: 20px; }
+        textarea { width: 95%; height: 60px; border: 1px solid #ddd; border-radius: 5px; padding: 10px; resize: none; }
+
+        /* Feed Posts */
+        .post { background: white; padding: 15px; border-radius: 8px; border: 1px solid #ddd; margin-bottom: 15px; }
+        .post-header { display: flex; align-items: center; margin-bottom: 10px; font-weight: bold; }
+        .post-img { width: 40px; height: 40px; border-radius: 50%; margin-right: 10px; background: #eee; }
+        .post-actions { border-top: 1px solid #eee; margin-top: 10px; padding-top: 10px; display: flex; gap: 20px; }
+        .action-btn { cursor: pointer; color: #65676b; font-weight: 600; background: none; border: none; }
+        
+        /* Search Results */
+        #search-results { background: white; position: absolute; top: 50px; width: 200px; border-radius: 5px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
+        .search-item { padding: 10px; border-bottom: 1px solid #eee; cursor: pointer; }
     </style>
 </head>
-<body class="bg-gray-100 font-sans mb-16 overflow-x-hidden">
+<body>
 
-    <div id="auth-screen" class="min-h-screen bg-white flex items-center justify-center p-6">
-        <div class="w-full max-w-sm">
-            <h1 class="text-6xl font-black text-blue-600 text-center mb-2 italic">Swarg</h1>
-            <p class="text-center text-gray-400 mb-10 font-medium">Aapka Apna Social World</p>
+    <div id="auth-container">
+        <h2 style="text-align:center; color:#1877f2;">Swarg</h2>
+        <div style="display:flex; justify-content:space-between; margin-bottom:20px;">
+            <button id="loginTab" class="tab-btn active-tab" onclick="toggleAuth('login')">Login</button>
+            <button id="regTab" class="tab-btn" onclick="toggleAuth('reg')">Register</button>
+        </div>
 
-            <div id="login-form" class="space-y-4">
-                <input type="text" id="log-user" placeholder="Username" class="w-full p-4 bg-gray-50 border rounded-2xl outline-none">
-                <input type="password" id="log-pass" placeholder="Password" class="w-full p-4 bg-gray-50 border rounded-2xl outline-none">
-                <button type="button" onclick="handleLogin()" class="w-full bg-blue-600 text-white font-bold py-4 rounded-2xl shadow-lg btn-active">Login Karein</button>
-                <p class="text-center text-sm pt-6">Account nahi hai? <span onclick="toggleAuth(true)" class="text-blue-600 font-bold">Register Karein</span></p>
-            </div>
+        <div id="login-form">
+            <input type="text" id="loginUser" placeholder="Username">
+            <input type="password" id="loginPass" placeholder="Password">
+            <button class="main-btn" onclick="handleLogin()">Log In</button>
+        </div>
 
-            <div id="register-form" class="hidden space-y-3">
-                <h2 class="text-2xl font-bold text-gray-800">Register</h2>
-                <input type="text" id="reg-name" placeholder="Pura Naam" class="w-full p-4 bg-gray-50 border rounded-xl outline-none">
-                <input type="text" id="reg-user" placeholder="Username (Unique)" class="w-full p-4 bg-gray-50 border rounded-xl outline-none">
-                <input type="password" id="reg-pass" placeholder="Password" class="w-full p-4 bg-gray-50 border rounded-xl outline-none">
-                <input type="date" id="reg-dob" class="w-full p-4 bg-gray-50 border rounded-xl outline-none">
-                
-                <div class="p-4 border-2 border-dashed border-blue-200 rounded-xl text-center bg-blue-50 relative">
-                    <p id="dp-status" class="text-xs text-blue-600 font-bold">Photo Chunein</p>
-                    <input type="file" id="reg-dp" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer">
-                </div>
-
-                <button type="button" onclick="handleRegister()" class="w-full bg-green-600 text-white font-bold py-4 rounded-2xl shadow-lg btn-active">Sign Up</button>
-                <p class="text-center text-sm pt-4 text-blue-600 font-bold" onclick="toggleAuth(false)">Wapas Login</p>
-            </div>
+        <div id="reg-form" class="hidden">
+            <input type="text" id="regName" placeholder="Full Name">
+            <input type="text" id="regUser" placeholder="Choose Username">
+            <input type="password" id="regPass" placeholder="Create Password">
+            <input type="date" id="regDob">
+            <p style="font-size: 12px; color: grey;">Profile Photo URL (Optional):</p>
+            <input type="text" id="regPic" placeholder="https://image-link.com">
+            <button class="main-btn" onclick="handleRegister()">Register</button>
         </div>
     </div>
 
     <div id="main-app" class="hidden">
-        <header class="bg-white sticky top-0 z-50 p-4 flex justify-between items-center shadow-sm">
-            <h2 class="text-2xl font-black text-blue-600 italic">Swarg</h2>
-            <i class="fab fa-facebook-messenger text-xl text-gray-600"></i>
+        <header>
+            <h2 style="margin:0;">Swarg</h2>
+            <div style="position:relative;">
+                <input type="text" class="search-bar" id="searchInput" placeholder="Search Swarg..." onkeyup="handleSearch()">
+                <div id="search-results" class="hidden"></div>
+            </div>
+            <button onclick="handleLogout()" style="background:white; border:none; padding:5px 10px; border-radius:5px; cursor:pointer;">Logout</button>
         </header>
 
-        <main class="max-w-md mx-auto p-4">
-            <div id="tab-feed" class="tab-content active-tab">
-                <div class="bg-white p-4 rounded-xl shadow-sm mb-4 flex items-center space-x-3">
-                    <img id="nav-dp" class="w-10 h-10 rounded-full border bg-gray-200">
-                    <div class="bg-gray-100 rounded-full w-full p-2 px-4 text-gray-400 text-sm">Post karein...</div>
-                </div>
-                <div class="bg-white rounded-2xl shadow-sm border p-4 text-center">
-                    <h3 class="font-bold">Welcome <span id="welcome-name">...</span>!</h3>
-                    <p class="text-sm text-gray-500 mt-2">Aapka Swarg account taiyar hai.</p>
+        <div class="container">
+            <div class="stories" id="storyContainer">
+                <div class="story-card">
+                    <img src="https://via.placeholder.com/60" class="story-img">
+                    <p>Your Story</p>
                 </div>
             </div>
 
-            <div id="tab-profile" class="tab-content">
-                <div class="bg-white rounded-3xl shadow-sm overflow-hidden text-center pb-10">
-                    <div class="h-24 bg-blue-600"></div>
-                    <img id="prof-dp" class="w-32 h-32 rounded-full border-4 border-white mx-auto -mt-16 bg-gray-200 object-cover">
-                    <h2 id="prof-name" class="text-2xl font-black mt-4">...</h2>
-                    <p id="prof-user" class="text-blue-600 font-bold">@username</p>
-                    <button onclick="logout()" class="mt-8 bg-red-100 text-red-600 px-10 py-3 rounded-2xl font-bold">Logout</button>
-                </div>
+            <div class="create-post">
+                <textarea id="postText" placeholder="Swarg mein naya kya hai?"></textarea>
+                <button class="main-btn" style="width:auto; padding:8px 20px;" onclick="createPost()">Post Karein</button>
             </div>
-        </main>
 
-        <nav class="fixed bottom-0 w-full bg-white border-t flex justify-around p-2 z-50 shadow-2xl">
-            <button onclick="showTab('feed', this)" class="nav-active p-2"><i class="fas fa-home text-xl"></i></button>
-            <button onclick="showTab('profile', this)" class="text-gray-400 p-2"><i class="fas fa-user-circle text-xl"></i></button>
-        </nav>
+            <div id="feed"></div>
+        </div>
     </div>
 
     <script>
-        let selectedDP = "";
+        // --- DATA LOGIC ---
+        let users = JSON.parse(localStorage.getItem('swarg_users')) || [];
+        let posts = JSON.parse(localStorage.getItem('swarg_posts')) || [];
+        let currentUser = null;
 
-        // Check Session
-        window.onload = function() {
-            const session = localStorage.getItem('swarg_session');
-            if(session) launchApp(JSON.parse(session));
-        };
-
-        function toggleAuth(show) {
-            document.getElementById('login-form').classList.toggle('hidden', show);
-            document.getElementById('register-form').classList.toggle('hidden', !show);
+        // --- AUTH FUNCTIONS ---
+        function toggleAuth(type) {
+            if(type === 'login') {
+                document.getElementById('login-form').classList.remove('hidden');
+                document.getElementById('reg-form').classList.add('hidden');
+                document.getElementById('loginTab').classList.add('active-tab');
+                document.getElementById('regTab').classList.remove('active-tab');
+            } else {
+                document.getElementById('reg-form').classList.remove('hidden');
+                document.getElementById('login-form').classList.add('hidden');
+                document.getElementById('regTab').classList.add('active-tab');
+                document.getElementById('loginTab').classList.remove('active-tab');
+            }
         }
 
-        // Photo Upload
-        document.getElementById('reg-dp').onchange = function(e) {
-            const reader = new FileReader();
-            reader.onload = (f) => {
-                selectedDP = f.target.result;
-                document.getElementById('dp-status').innerText = "✅ Photo Ready!";
-            };
-            reader.readAsDataURL(e.target.files[0]);
-        };
-
-        // --- REGISTER ---
         function handleRegister() {
-            try {
-                const name = document.getElementById('reg-name').value.trim();
-                const user = document.getElementById('reg-user').value.trim().toLowerCase();
-                const pass = document.getElementById('reg-pass').value.trim();
-                const dob = document.getElementById('reg-dob').value;
+            const name = document.getElementById('regName').value;
+            const user = document.getElementById('regUser').value;
+            const pass = document.getElementById('regPass').value;
+            const dob = document.getElementById('regDob').value;
+            const pic = document.getElementById('regPic').value || 'https://via.placeholder.com/40';
 
-                if(!name || !user || !pass) {
-                    alert("Please fill name, username and password!");
-                    return;
-                }
+            if(!name || !user || !pass) return alert("Please fill all details!");
 
-                const data = { name, user, pass, dob, dp: selectedDP };
-                localStorage.setItem('u_' + user, JSON.stringify(data));
-                
-                alert("Account created! Now Log In.");
-                toggleAuth(false);
-            } catch(err) {
-                alert("Register Error: " + err.message);
-            }
+            const exists = users.find(u => u.username === user);
+            if(exists) return alert("Username already taken!");
+
+            const newUser = { name, username: user, password: pass, dob, profilePic: pic };
+            users.push(newUser);
+            localStorage.setItem('swarg_users', JSON.stringify(users));
+            alert("Registration Successful! Now Login.");
+            toggleAuth('login');
         }
 
-        // --- LOGIN ---
         function handleLogin() {
-            try {
-                const user = document.getElementById('log-user').value.trim().toLowerCase();
-                const pass = document.getElementById('log-pass').value.trim();
+            const user = document.getElementById('loginUser').value;
+            const pass = document.getElementById('loginPass').value;
 
-                const stored = localStorage.getItem('u_' + user);
-                if(stored) {
-                    const data = JSON.parse(stored);
-                    if(data.pass === pass) {
-                        localStorage.setItem('swarg_session', JSON.stringify(data));
-                        launchApp(data);
-                    } else {
-                        alert("Wrong Password!");
-                    }
-                } else {
-                    alert("User not found! Register first.");
-                }
-            } catch(err) {
-                alert("Login Error: " + err.message);
+            const foundUser = users.find(u => u.username === user && u.password === pass);
+            if(foundUser) {
+                currentUser = foundUser;
+                showApp();
+            } else {
+                alert("Galat Username ya Password!");
             }
         }
 
-        function launchApp(data) {
-            document.getElementById('auth-screen').style.display = 'none';
+        function handleLogout() {
+            currentUser = null;
+            document.getElementById('main-app').classList.add('hidden');
+            document.getElementById('auth-container').classList.remove('hidden');
+        }
+
+        // --- APP LOGIC ---
+        function showApp() {
+            document.getElementById('auth-container').classList.add('hidden');
             document.getElementById('main-app').classList.remove('hidden');
-            
-            document.getElementById('welcome-name').innerText = data.name;
-            document.getElementById('prof-name').innerText = data.name;
-            document.getElementById('prof-user').innerText = "@" + data.user;
-            
-            const img = data.dp || "https://ui-avatars.com/api/?name=" + data.name;
-            document.getElementById('nav-dp').src = img;
-            document.getElementById('prof-dp').src = img;
+            renderFeed();
+            loadStories();
         }
 
-        function showTab(t, b) {
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active-tab'));
-            document.querySelectorAll('nav button').forEach(n => n.className = 'text-gray-400 p-2');
-            document.getElementById('tab-' + t).classList.add('active-tab');
-            b.className = 'nav-active p-2';
+        function createPost() {
+            const text = document.getElementById('postText').value;
+            if(!text.trim()) return;
+
+            const newPost = {
+                author: currentUser.name,
+                pic: currentUser.profilePic,
+                content: text,
+                time: new Date().toLocaleString()
+            };
+
+            posts.unshift(newPost); // Add to top
+            localStorage.setItem('swarg_posts', JSON.stringify(posts));
+            document.getElementById('postText').value = '';
+            renderFeed();
         }
 
-        function logout() {
-            localStorage.removeItem('swarg_session');
-            location.reload();
+        function renderFeed() {
+            const feedDiv = document.getElementById('feed');
+            feedDiv.innerHTML = posts.map(post => `
+                <div class="post">
+                    <div class="post-header">
+                        <img src="${post.pic}" class="post-img">
+                        <div>
+                            <div>${post.author}</div>
+                            <small style="color:gray; font-weight:normal;">${post.time}</small>
+                        </div>
+                    </div>
+                    <div class="post-content">${post.content}</div>
+                    <div class="post-actions">
+                        <button class="action-btn" onclick="this.style.color='blue'">Like</button>
+                        <button class="action-btn">Comment</button>
+                        <button class="action-btn">Share</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function handleSearch() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const resultsDiv = document.getElementById('search-results');
+            
+            if(!query) {
+                resultsDiv.classList.add('hidden');
+                return;
+            }
+
+            const filtered = users.filter(u => u.name.toLowerCase().includes(query));
+            if(filtered.length > 0) {
+                resultsDiv.classList.remove('hidden');
+                resultsDiv.innerHTML = filtered.map(u => `<div class="search-item">${u.name} (@${u.username})</div>`).join('');
+            } else {
+                resultsDiv.innerHTML = '<div class="search-item">No user found</div>';
+            }
+        }
+
+        function loadStories() {
+            const container = document.getElementById('storyContainer');
+            // Adding dummy stories for look
+            const dummyStories = ["Amit", "Sneha", "Rahul", "Priya"];
+            dummyStories.forEach(name => {
+                container.innerHTML += `
+                    <div class="story-card">
+                        <img src="https://i.pravatar.cc/150?u=${name}" class="story-img">
+                        <p>${name}</p>
+                    </div>
+                `;
+            });
         }
     </script>
 </body>
