@@ -323,4 +323,391 @@
                 <i class="fas fa-chevron-left text-2xl text-slate-400 cursor-pointer" onclick="closeChatRoom()"></i>
                 <img id="chat-target-dp" class="w-12 h-12 rounded-2xl object-cover border shadow-sm">
                 <div>
+                    <h4 id="chat-target-name" class="font-black text-sm tracking-tight italic">...</h4>
+                    <p class="text-[10px] text-green-500 font-black uppercase tracking-widest">Active In Janat</p>
+                </div>
+            </header>
+            <div id="chat-messages-area" class="flex-1 overflow-y-auto p-6 space-y-4 no-scrollbar bg-slate-50/50">
+                </div>
+            <div class="p-6 bg-white border-t flex items-center space-x-4">
+                <input type="text" id="chat-input" placeholder="Speak to the soul..." class="flex-1 bg-slate-50 p-5 rounded-[2rem] outline-none font-medium border-none focus:ring-4 ring-blue-50">
+                <button onclick="sendChatMessage()" class="bg-blue-600 text-white w-14 h-14 rounded-full flex items-center justify-center shadow-xl shadow-blue-200 active:scale-95 transition"><i class="fas fa-paper-plane"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <div id="list-modal" class="hidden fixed inset-0 z-[600] modal-blur flex items-end">
+        <div class="bg-white w-full max-h-[85vh] rounded-t-[5rem] p-10 overflow-y-auto no-scrollbar shadow-[0_-20px_60px_rgba(0,0,0,0.15)] max-w-md mx-auto">
+            <div class="flex justify-between items-center mb-10 border-b border-slate-50 pb-8">
+                <h3 class="text-3xl font-black italic tracking-tighter" id="list-title">Followers</h3>
+                <i class="fas fa-times-circle text-4xl text-slate-100 hover:text-red-500 transition cursor-pointer" onclick="closeListModal()"></i>
+            </div>
+            <div id="list-content-area" class="space-y-6 pb-20"></div>
+        </div>
+    </div>
+
+    <script>
+        /**
+         * SWARG DATABASE ENGINE V10
+         * Handles Global Connectivity, 11M Army Simulation, and Real-time Logic
+         */
+        
+        let currentUser = null;
+        let pTempImg = "";
+        let rTempDP = "";
+        let currentChatTarget = null;
+
+        // FAKE CELEBRITY DATA FOR AMAR
+        const SWARG_VIPS = [
+            { n: "Elon Musk", u: "elonmusk", dp: "https://ui-avatars.com/api/?name=Elon+Musk&background=000&color=fff" },
+            { n: "Narendra Modi", u: "narendramodi", dp: "https://ui-avatars.com/api/?name=Narendra+Modi&background=ff9933&color=fff" },
+            { n: "Donald Trump", u: "trump", dp: "https://ui-avatars.com/api/?name=Donald+Trump&background=000080&color=fff" },
+            { n: "Cristiano Ronaldo", u: "cr7", dp: "https://ui-avatars.com/api/?name=CR7&background=random" },
+            { n: "Virat Kohli", u: "kohli", dp: "https://ui-avatars.com/api/?name=Virat+Kohli&background=random" }
+        ];
+
+        // BOOTSTRAP SYSTEM
+        window.addEventListener('DOMContentLoaded', () => {
+            console.log("Swarg Infinity Engine Initializing...");
+            verifyDatabase();
+            
+            const session = localStorage.getItem('swarg_session_v10');
+            if(session) {
+                launchApp(JSON.parse(session));
+            }
+
+            // Image Handler for Registration
+            document.getElementById('r-dp').onchange = (e) => {
+                const fr = new FileReader();
+                fr.onload = (f) => { rTempDP = f.target.result; document.getElementById('dp-status').innerText = "✅ IDENTITY SECURED"; };
+                fr.readAsDataURL(e.target.files[0]);
+            };
+        });
+
+        function verifyDatabase() {
+            const keys = ['sw_users_v10', 'sw_posts_v10', 'sw_messages_v10'];
+            keys.forEach(k => { if(!localStorage.getItem(k)) localStorage.setItem(k, JSON.stringify([])); });
+        }
+
+        // --- AUTH SYSTEM ---
+        function toggleAuth(isReg) {
+            document.getElementById('login-form').classList.toggle('hidden', isReg);
+            document.getElementById('reg-form').classList.toggle('hidden', !isReg);
+        }
+
+        function systemRegister() {
+            const name = document.getElementById('r-name').value.trim();
+            const user = document.getElementById('r-user').value.toLowerCase().trim();
+            const pass = document.getElementById('r-pass').value.trim();
+
+            if(!name || !user || !pass) return alert("All fields are mandatory, Amar!");
+
+            let users = JSON.parse(localStorage.getItem('sw_users_v10'));
+            if(users.some(u => u.user === user)) return alert("Identity already exists in Swarg!");
+
+            const newUser = {
+                name, user, pass, 
+                dp: rTempDP || `https://ui-avatars.com/api/?name=${name}&background=random`,
+                followers: (user === 'amar' ? 11000000 : []), 
+                following: []
+            };
+
+            users.push(newUser);
+            localStorage.setItem('sw_users_v10', JSON.stringify(users));
+            alert("Swarg Entrance Approved! Please Login.");
+            toggleAuth(false);
+        }
+
+        function systemLogin() {
+            const user = document.getElementById('l-user').value.toLowerCase().trim();
+            const pass = document.getElementById('l-pass').value.trim();
+
+            const allUsers = JSON.parse(localStorage.getItem('sw_users_v10'));
+            const found = allUsers.find(u => u.user === user && u.pass === pass);
+
+            if(found) {
+                localStorage.setItem('swarg_session_v10', JSON.stringify(found));
+                launchApp(found);
+            } else alert("Access Denied! Identity Mismatch.");
+        }
+
+        function launchApp(data) {
+            currentUser = data;
+            document.getElementById('auth-screen').classList.add('hidden');
+            document.getElementById('main-app').classList.remove('hidden');
+            syncSystemState();
+            renderGlobalWall();
+            renderChatList();
+        }
+
+        // --- CORE SYNC ENGINE ---
+        function syncSystemState() {
+            const users = JSON.parse(localStorage.getItem('sw_users_v10'));
+            currentUser = users.find(u => u.user === currentUser.user);
+            
+            const isOwner = currentUser.user.toLowerCase() === 'amar';
+            
+            // Header/Input UI
+            document.getElementById('my-profile-name').innerText = currentUser.name;
+            document.getElementById('my-profile-handle').innerText = "@" + currentUser.user;
+            document.getElementById('my-profile-img').src = currentUser.dp;
+            document.getElementById('comp-avatar').src = currentUser.dp;
+            
+            // Branding
+            document.getElementById('supreme-badge-ui').classList.toggle('hidden', !isOwner);
+            document.getElementById('my-blue-tick').classList.toggle('hidden', !isOwner);
+
+            // Stats Logic
+            const posts = JSON.parse(localStorage.getItem('sw_posts_v10'));
+            document.getElementById('stat-posts').innerText = posts.filter(p => p.user === currentUser.user).length;
+            
+            // 11M Army Stat Fix
+            document.getElementById('stat-followers').innerText = isOwner ? "11M" : (currentUser.followers.length || 0);
+            document.getElementById('stat-following').innerText = isOwner ? "5" : (currentUser.following.length || 0);
+            
+            // Discover Amar Logic
+            if(!isOwner) {
+                const amar = users.find(u => u.user === 'amar');
+                if(amar) {
+                    document.getElementById('amar-hero-card').classList.remove('hidden');
+                    document.getElementById('amar-vip-dp').src = amar.dp;
+                }
+            } else {
+                document.getElementById('amar-hero-card').classList.add('hidden');
+            }
+
+            renderProfileGrid(posts.filter(p => p.user === currentUser.user));
+        }
+
+        // --- GLOBAL FEED MODULE ---
+        function previewPostImage(input) {
+            const r = new FileReader();
+            r.onload = (e) => { 
+                pTempImg = e.target.result; 
+                document.getElementById('p-img-preview-src').src = pTempImg;
+                document.getElementById('p-img-preview-box').classList.remove('hidden');
+            };
+            r.readAsDataURL(input.files[0]);
+        }
+
+        function clearPostImage() { pTempImg = ""; document.getElementById('p-img-preview-box').classList.add('hidden'); }
+
+        function systemPost() {
+            const txt = document.getElementById('main-post-input').value.trim();
+            if(!txt && !pTempImg) return;
+
+            let posts = JSON.parse(localStorage.getItem('sw_posts_v10'));
+            posts.unshift({
+                id: Date.now(),
+                user: currentUser.user,
+                name: currentUser.name,
+                dp: currentUser.dp,
+                text: txt,
+                img: pTempImg,
+                likes: []
+            });
+            
+            localStorage.setItem('sw_posts_v10', JSON.stringify(posts));
+            document.getElementById('main-post-input').value = "";
+            clearPostImage();
+            renderGlobalWall();
+            syncSystemState();
+        }
+
+        function renderGlobalWall() {
+            const wall = document.getElementById('global-feed-wall');
+            const posts = JSON.parse(localStorage.getItem('sw_posts_v10'));
+
+            if(posts.length === 0) {
+                wall.innerHTML = `<div class="p-16 text-center bg-white rounded-[3rem] border-dashed border-2 border-slate-100 text-slate-300 font-bold italic">Swarg is quiet... Start a revolution.</div>`;
+                return;
+            }
+
+            wall.innerHTML = posts.map(p => {
+                const isOwner = p.user.toLowerCase() === 'amar';
+                const isLiked = (p.likes || []).includes(currentUser.user);
+                return `
+                <div class="premium-card bg-white p-8 overflow-hidden">
+                    <div class="flex items-center justify-between mb-6">
+                        <div class="flex items-center space-x-4 cursor-pointer" onclick="viewOtherProfile('${p.user}')">
+                            <img src="${p.dp}" class="w-14 h-14 rounded-2xl object-cover border shadow-sm">
+                            <div>
+                                <h4 class="font-black text-base flex items-center italic">${p.name} ${isOwner ? '<i class="fas fa-check-circle blue-tick-animated"></i>' : ''}</h4>
+                                <p class="text-[10px] text-blue-500 font-black uppercase tracking-widest">@${p.user} ${isOwner ? '• SUPREME' : ''}</p>
+                            </div>
+                        </div>
+                        ${p.user === currentUser.user ? `<i class="fas fa-trash-can text-slate-200 hover:text-red-500 transition" onclick="deleteSystemPost(${p.id})"></i>` : ''}
+                    </div>
+                    <p class="text-slate-700 font-medium leading-relaxed mb-6 text-sm">${p.text}</p>
+                    ${p.img ? `<img src="${p.img}" class="w-full rounded-[3rem] border shadow-inner max-h-96 object-cover mb-4">` : ''}
+                    <div class="flex items-center space-x-8 mt-6 pt-6 border-t border-slate-50 text-slate-400 font-bold text-xs">
+                        <button onclick="handleSystemLike(${p.id})" class="flex items-center space-x-2 ${isLiked ? 'text-red-500' : ''}">
+                            <i class="${isLiked ? 'fas' : 'far'} fa-heart text-2xl"></i><span>${(p.likes || []).length}</span>
+                        </button>
+                        <i class="far fa-comment-dots text-2xl" onclick="openMessenger('${p.user}')"></i>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        function handleSystemLike(id) {
+            let posts = JSON.parse(localStorage.getItem('sw_posts_v10'));
+            const p = posts.find(x => x.id === id);
+            const idx = p.likes.indexOf(currentUser.user);
+            if(idx === -1) p.likes.push(currentUser.user); else p.likes.splice(idx, 1);
+            localStorage.setItem('sw_posts_v10', JSON.stringify(posts));
+            renderGlobalWall();
+        }
+
+        function deleteSystemPost(id) {
+            if(!confirm("Terminate this memory?")) return;
+            let posts = JSON.parse(localStorage.getItem('sw_posts_v10'));
+            posts = posts.filter(p => p.id !== id);
+            localStorage.setItem('sw_posts_v10', JSON.stringify(posts));
+            renderGlobalWall();
+            syncSystemState();
+        }
+
+        // --- PROFILE ENGINE MODULE ---
+        function viewOtherProfile(username) {
+            if(username === currentUser.user) { showTab('profile'); return; }
+            
+            const users = JSON.parse(localStorage.getItem('sw_users_v10'));
+            const target = users.find(u => u.user === username);
+            if(!target) return;
+
+            const modal = document.getElementById('profile-view-modal');
+            const isOwner = target.user.toLowerCase() === 'amar';
+            
+            document.getElementById('op-name').innerText = target.name;
+            document.getElementById('op-user').innerText = "@" + target.user;
+            document.getElementById('op-dp').src = target.dp;
+            document.getElementById('op-tick').classList.toggle('hidden', !isOwner);
+            document.getElementById('op-owner-badge').classList.toggle('hidden', !isOwner);
+            
+            // Real Follow State
+            const followBtn = document.getElementById('op-follow-btn');
+            const isFollowing = (currentUser.following || []).includes(target.user);
+            followBtn.innerText = isFollowing ? "Unfollow Angel" : "Follow Angel";
+            followBtn.className = isFollowing ? "flex-1 bg-slate-100 text-slate-500 py-5 rounded-[2rem] font-black text-sm transition" : "flex-1 bg-blue-600 text-white py-5 rounded-[2rem] font-black text-sm shadow-xl active:scale-95 transition";
+            followBtn.onclick = () => toggleSystemFollow(target.user);
+            
+            document.getElementById('op-msg-btn').onclick = () => openMessenger(target.user);
+
+            // Stats
+            document.getElementById('op-stat-f').innerText = isOwner ? "11M" : (target.followers.length || 0);
+            document.getElementById('op-stat-fg').innerText = isOwner ? "5" : (target.following.length || 0);
+
+            // Grid
+            const posts = JSON.parse(localStorage.getItem('sw_posts_v10')).filter(p => p.user === target.user);
+            document.getElementById('op-post-grid').innerHTML = posts.map(p => p.img ? `<img src="${p.img}" class="w-full aspect-square object-cover rounded-[2rem] border">` : `<div class="aspect-square bg-slate-50 rounded-[2rem] flex items-center justify-center p-4 text-[10px] italic text-slate-300 text-center">${p.text}</div>`).join('');
+
+            modal.classList.remove('hidden');
+        }
+
+        function toggleSystemFollow(targetId) {
+            let users = JSON.parse(localStorage.getItem('sw_users_v10'));
+            const meObj = users.find(u => u.user === currentUser.user);
+            const targetObj = users.find(u => u.user === targetId);
+
+            if(!meObj.following) meObj.following = [];
+            if(!targetObj.followers) targetObj.followers = [];
+
+            const idx = meObj.following.indexOf(targetId);
+            if(idx === -1) {
+                meObj.following.push(targetId);
+                targetObj.followers.push(currentUser.user);
+            } else {
+                meObj.following.splice(idx, 1);
+                targetObj.followers.splice(targetObj.followers.indexOf(currentUser.user), 1);
+            }
+
+            localStorage.setItem('sw_users_v10', JSON.stringify(users));
+            viewOtherProfile(targetId);
+            syncSystemState();
+        }
+
+        function closeOtherProfile() { document.getElementById('profile-view-modal').classList.add('hidden'); }
+
+        // --- SEARCH MODULE ---
+        function engineSearch(query) {
+            const wall = document.getElementById('search-list-wall');
+            if(!query.trim()) { wall.innerHTML = ""; return; }
+
+            const users = JSON.parse(localStorage.getItem('sw_users_v10'));
+            const matches = users.filter(u => u.name.toLowerCase().includes(query.toLowerCase()) || u.user.includes(query.toLowerCase()));
+
+            if(matches.length === 0) {
+                wall.innerHTML = `<p class="text-center text-slate-400 py-10 italic">No life found in this coordinate.</p>`;
+                return;
+            }
+
+            wall.innerHTML = matches.map(u => {
+                const isOwner = u.user.toLowerCase() === 'amar';
+                return `
+                <div class="premium-card p-6 flex items-center justify-between shadow-lg shadow-blue-50/20 border-white/50" onclick="viewOtherProfile('${u.user}')">
+                    <div class="flex items-center space-x-4">
+                        <img src="${u.dp}" class="w-16 h-16 rounded-[1.5rem] object-cover border-2 border-blue-50 shadow-md">
+                        <div>
+                            <p class="font-black text-lg tracking-tighter italic">${u.name} ${isOwner ? '<i class="fas fa-check-circle blue-tick-animated"></i>' : ''}</p>
+                            <p class="text-xs text-blue-500 font-bold italic">@${u.user}</p>
+                        </div>
+                    </div>
+                    <i class="fas fa-chevron-right text-slate-200 pr-4"></i>
+                </div>`;
+            }).join('');
+        }
+
+        // --- MESSENGER MODULE ---
+        function renderChatList() {
+            const wall = document.getElementById('chat-threads-wall');
+            const users = JSON.parse(localStorage.getItem('sw_users_v10'));
+            const msgs = JSON.parse(localStorage.getItem('sw_messages_v10'));
+            
+            // For now, let's show all followed users in chat list
+            const followed = users.filter(u => (currentUser.following || []).includes(u.user) || u.user === 'amar');
+            
+            if(followed.length === 0) {
+                wall.innerHTML = `<p class="text-center text-slate-300 py-4 italic">Follow someone to start messaging.</p>`;
+                return;
+            }
+
+            wall.innerHTML = followed.map(u => `
+                <div class="premium-card p-5 flex items-center justify-between cursor-pointer" onclick="openMessenger('${u.user}')">
+                    <div class="flex items-center space-x-4">
+                        <img src="${u.dp}" class="w-14 h-14 rounded-[1.2rem] object-cover border">
+                        <div>
+                            <p class="font-black text-sm italic">${u.name}</p>
+                            <p class="text-[10px] text-slate-400">Angel Active Now</p>
+                        </div>
+                    </div>
+                    <i class="fas fa-circle text-[8px] text-green-500 mr-4"></i>
+                </div>`).join('');
+        }
+
+        function openMessenger(targetUser) {
+            const users = JSON.parse(localStorage.getItem('sw_users_v10'));
+            const target = users.find(u => u.user === targetUser);
+            if(!target) return;
+
+            currentChatTarget = target;
+            document.getElementById('chat-room-modal').classList.remove('hidden');
+            document.getElementById('chat-target-name').innerText = target.name;
+            document.getElementById('chat-target-dp').src = target.dp;
+            
+            renderMessages();
+        }
+
+        function renderMessages() {
+            const wall = document.getElementById('chat-messages-area');
+            const db = JSON.parse(localStorage.getItem('sw_messages_v10'));
+            
+            const thread = db.filter(m => 
+                (m.from === currentUser.user && m.to === currentChatTarget.user) ||
+                (m.from === currentChatTarget.user && m.to === currentUser.user)
+            );
+
+            wall.innerHTML = thread.map(m => `
+                <div class="flex ${m.from === currentUser.user ? 'justify-end' : 'justify-start'}">
+                    <div class="ma
     
