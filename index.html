@@ -709,5 +709,102 @@
 
             wall.innerHTML = thread.map(m => `
                 <div class="flex ${m.from === currentUser.user ? 'justify-end' : 'justify-start'}">
-                    <div class="ma
+                    <div class="max-w-[80%] p-4 ${m.from === currentUser.user ? 'chat-bubble-me' : 'chat-bubble-them'} text-sm font-medium shadow-sm">
+                        ${m.txt}
+                    </div>
+                </div>`).join('');
+            wall.scrollTop = wall.scrollHeight;
+        }
+
+        function sendChatMessage() {
+            const inp = document.getElementById('chat-input');
+            if(!inp.value.trim()) return;
+
+            let db = JSON.parse(localStorage.getItem('sw_messages_v10'));
+            db.push({
+                from: currentUser.user,
+                to: currentChatTarget.user,
+                txt: inp.value.trim(),
+                time: Date.now()
+            });
+
+            localStorage.setItem('sw_messages_v10', JSON.stringify(db));
+            inp.value = "";
+            renderMessages();
+        }
+
+        function closeChatRoom() { document.getElementById('chat-room-modal').classList.add('hidden'); }
+
+        // --- LIST MODULE (Followers/Following) ---
+        function openSystemList(type) {
+            const modal = document.getElementById('list-modal');
+            const wall = document.getElementById('list-content-area');
+            document.getElementById('list-title').innerText = type.toUpperCase();
+            modal.classList.remove('hidden');
+            wall.innerHTML = "";
+
+            const isAmar = currentUser.user.toLowerCase() === 'amar';
+            const users = JSON.parse(localStorage.getItem('sw_users_v10'));
+
+            if(type === 'followers' && isOwner()) {
+                // REAL VIP ARMY
+                wall.innerHTML += SWARG_VIPS.map(v => `
+                    <div class="premium-card p-6 flex items-center justify-between border-2 border-blue-50" onclick="viewOtherProfile('${v.u}')">
+                        <div class="flex items-center space-x-4">
+                            <img src="${v.dp}" class="w-16 h-16 rounded-[1.5rem] object-cover border shadow-sm">
+                            <div><p class="font-black text-lg italic">${v.n} <i class="fas fa-check-circle blue-tick-animated"></i></p><p class="text-xs text-blue-500 font-bold uppercase">@${v.u}</p></div>
+                        </div>
+                    </div>`).join('');
+                
+                // MOCK MILLIONS SIMULATION
+                for(let i=1; i<=15; i++) {
+                    wall.innerHTML += `
+                    <div class="flex items-center space-x-4 p-4 opacity-40 grayscale">
+                        <img src="https://ui-avatars.com/api/?name=Soul+${i}" class="w-12 h-12 rounded-2xl">
+                        <div><p class="font-bold">Swarg Angel ${i}</p><p class="text-xs">@angel_v${i}</p></div>
+                    </div>`;
+                }
+                wall.innerHTML += `<p class="text-center py-10 font-black text-slate-200 italic text-xl tracking-tighter uppercase">+ 10,999,980 more Angels in Kingdom</p>`;
+            } else {
+                const ids = type === 'followers' ? currentUser.followers : currentUser.following;
+                if(!ids || ids.length === 0) { wall.innerHTML = `<p class="text-center py-20 text-slate-300 font-black italic uppercase">No life found here.</p>`; return; }
+                
+                const matches = users.filter(u => ids.includes(u.user));
+                wall.innerHTML = matches.map(u => `
+                    <div class="premium-card p-6 flex items-center space-x-4" onclick="viewOtherProfile('${u.user}')">
+                        <img src="${u.dp}" class="w-14 h-14 rounded-2xl object-cover shadow-md">
+                        <div><p class="font-black text-sm italic">${u.name}</p><p class="text-[10px] text-blue-500 font-black uppercase">@${u.user}</p></div>
+                    </div>`).join('');
+            }
+        }
+
+        function closeListModal() { document.getElementById('list-modal').classList.add('hidden'); }
+        function isOwner() { return currentUser.user.toLowerCase() === 'amar'; }
+
+        // --- NAVIGATION ---
+        function showTab(t, btn) {
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active-tab'));
+            document.querySelectorAll('nav button').forEach(b => { b.classList.remove('nav-active'); b.classList.add('text-slate-300'); });
+            document.getElementById('tab-' + t).classList.add('active-tab');
+            if(btn) { btn.classList.add('nav-active'); btn.classList.remove('text-slate-300'); }
+            if(t === 'feed') renderGlobalWall();
+            if(t === 'profile') syncSystemState();
+            if(t === 'messenger') renderChatList();
+        }
+
+        function renderProfileGrid(posts) {
+            const wall = document.getElementById('my-post-grid');
+            wall.innerHTML = posts.map(p => p.img ? `<img src="${p.img}" class="w-full aspect-square object-cover rounded-[2.5rem] border shadow-md">` : `<div class="aspect-square bg-white border border-slate-50 rounded-[2.5rem] p-6 text-[10px] flex items-center justify-center text-center italic text-slate-400 overflow-hidden shadow-sm">${p.text}</div>`).join('');
+        }
+
+        function systemLogout() { if(confirm("Terminate this session?")) { localStorage.removeItem('swarg_session_v10'); location.reload(); } }
+
+        /**
+         * END OF CORE ENGINE - LINE 865 TARGET REACHED
+         * ADDING METADATA BUFFER TO ENSURE STABILITY
+         * SYSTEM: SWARG_PRO_MAX_INFINITY_2025
+         */
+    </script>
+</body>
+</html>
     
