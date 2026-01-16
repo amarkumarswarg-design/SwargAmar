@@ -317,4 +317,207 @@
 
         function renderFeed() {
             const wall = document.getElementById('feed-wall');
-            const posts = JSON
+            const posts = JSON.parse(localStorage.getItem('swarg_posts_pro') || "[]");
+            wall.innerHTML = posts.map(p => {
+                const isLiked = p.likedBy.includes(user.user);
+                const ownerBadge = p.user.toLowerCase() === 'amar' ? '<i class="fas fa-check-circle text-blue-500 ml-1"></i> <span class="owner-badge ml-2">Owner</span>' : '';
+                
+                return `
+                <div class="bg-white p-6 rounded-[2.5rem] shadow-sm border border-slate-50 overflow-hidden">
+                    <div class="flex items-center justify-between mb-5">
+                        <div class="flex items-center space-x-3">
+                            <img src="${p.dp}" class="w-12 h-12 rounded-2xl object-cover border">
+                            <div>
+                                <p class="font-black text-slate-800 text-sm flex items-center">${p.name}${ownerBadge}</p>
+                                <p class="text-[10px] text-blue-500 font-bold uppercase tracking-widest">@${p.user} • Swarg</p>
+                            </div>
+                        </div>
+                        ${p.user === user.user ? `<i class="fas fa-trash-alt text-slate-200" onclick="deletePost(${p.id})"></i>` : ''}
+                    </div>
+                    <p class="text-slate-600 font-medium mb-4">${p.txt}</p>
+                    ${p.img ? `<img src="${p.img}" class="w-full h-80 object-cover rounded-[2rem] mb-4 shadow-sm border">` : ''}
+                    
+                    <div class="flex items-center space-x-6 pt-4 border-t border-slate-50">
+                        <button onclick="handleLike(${p.id}, this)" class="flex items-center space-x-2 ${isLiked ? 'text-red-500' : 'text-slate-400'} font-bold transition-all">
+                            <i class="${isLiked ? 'fas' : 'far'} fa-heart text-xl"></i>
+                            <span class="text-xs">${p.likedBy.length}</span>
+                        </button>
+                        <button onclick="toggleComments(${p.id})" class="flex items-center space-x-2 text-slate-400 font-bold">
+                            <i class="far fa-comment-dots text-xl"></i>
+                            <span class="text-xs">${p.comments.length}</span>
+                        </button>
+                    </div>
+
+                    <div id="cmt-box-${p.id}" class="hidden comment-box mt-6 space-y-4 pt-4 border-t border-slate-50">
+                        <div id="cmt-list-${p.id}" class="space-y-3 max-h-40 overflow-y-auto no-scrollbar">
+                            ${p.comments.map(c => `
+                                <div class="flex space-x-2">
+                                    <div class="bg-slate-50 p-3 rounded-2xl text-xs flex-1">
+                                        <p class="font-black text-blue-600 mb-1">@${c.user}</p>
+                                        <p class="text-slate-600">${c.txt}</p>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                        <div class="flex space-x-2">
+                            <input type="text" id="cmt-input-${p.id}" placeholder="Write a comment..." class="flex-1 bg-slate-100 p-3 rounded-2xl text-xs outline-none focus:ring-2 ring-blue-500">
+                            <button onclick="addComment(${p.id})" class="bg-blue-600 text-white p-3 px-5 rounded-2xl text-xs font-black"><i class="fas fa-paper-plane"></i></button>
+                        </div>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        // --- BUG FIX: LIKES LOGIC ---
+        function handleLike(pid, btn) {
+            let posts = JSON.parse(localStorage.getItem('swarg_posts_pro') || "[]");
+            const p = posts.find(x => x.id === pid);
+            const idx = p.likedBy.indexOf(user.user);
+            
+            if(idx === -1) {
+                p.likedBy.push(user.user); // LIKE
+            } else {
+                p.likedBy.splice(idx, 1); // UNLIKE
+            }
+            
+            localStorage.setItem('swarg_posts_pro', JSON.stringify(posts));
+            renderFeed();
+        }
+
+        // --- COMMENTS LOGIC ---
+        function toggleComments(pid) {
+            document.getElementById(`cmt-box-${pid}`).classList.toggle('hidden');
+        }
+
+        function addComment(pid) {
+            const inp = document.getElementById(`cmt-input-${pid}`);
+            if(!inp.value.trim()) return;
+
+            let posts = JSON.parse(localStorage.getItem('swarg_posts_pro') || "[]");
+            const p = posts.find(x => x.id === pid);
+            p.comments.push({ user: user.user, txt: inp.value });
+            localStorage.setItem('swarg_posts_pro', JSON.stringify(posts));
+            inp.value = "";
+            renderFeed();
+            document.getElementById(`cmt-box-${pid}`).classList.remove('hidden');
+        }
+
+        function deletePost(id) {
+            let posts = JSON.parse(localStorage.getItem('swarg_posts_pro') || "[]");
+            posts = posts.filter(x => x.id !== id);
+            localStorage.setItem('swarg_posts_pro', JSON.stringify(posts));
+            renderFeed();
+            syncUI();
+        }
+
+        // --- STORY LOGIC ---
+        function uploadStory(input) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                let stories = JSON.parse(localStorage.getItem('swarg_stories_pro') || "[]");
+                stories.unshift({ id: Date.now(), user: user.user, name: user.name, dp: user.dp, img: e.target.result });
+                localStorage.setItem('swarg_stories_pro', JSON.stringify(stories));
+                renderStories();
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+
+        function renderStories() {
+            const wall = document.getElementById('story-wall');
+            const stories = JSON.parse(localStorage.getItem('swarg_stories_pro') || "[]");
+            wall.innerHTML = stories.map(s => `
+                <div class="flex-shrink-0 text-center cursor-pointer" onclick="viewStory(${s.id})">
+                    <div class="w-20 h-20 rounded-full border-2 border-pink-500 p-1 bg-white">
+                        <img src="${s.img}" class="w-full h-full rounded-full object-cover">
+                    </div>
+                    <p class="text-[10px] mt-2 font-black text-slate-700">${s.name.split(' ')[0]}</p>
+                </div>`).join('');
+        }
+
+        function viewStory(id) {
+            const stories = JSON.parse(localStorage.getItem('swarg_stories_pro') || "[]");
+            const s = stories.find(x => x.id === id);
+            activeStoryId = id;
+            document.getElementById('sm-img').src = s.img;
+            document.getElementById('sm-name').innerText = s.name;
+            document.getElementById('sm-dp').src = s.dp;
+            document.getElementById('sm-del-btn').classList.toggle('hidden', s.user !== user.user);
+            document.getElementById('story-modal').classList.remove('hidden');
+        }
+
+        function deleteStory() {
+            let stories = JSON.parse(localStorage.getItem('swarg_stories_pro') || "[]");
+            stories = stories.filter(x => x.id !== activeStoryId);
+            localStorage.setItem('swarg_stories_pro', JSON.stringify(stories));
+            closeStory();
+            renderStories();
+        }
+
+        function closeStory() { document.getElementById('story-modal').classList.add('hidden'); }
+
+        // --- PROFILE CUSTOMIZATION ---
+        function openEditModal() {
+            document.getElementById('edit-name').value = user.name;
+            document.getElementById('edit-bio').value = user.bio || "";
+            document.getElementById('edit-loc').value = user.loc || "";
+            document.getElementById('edit-web').value = user.web || "";
+            document.getElementById('edit-modal').classList.remove('hidden');
+        }
+
+        function closeEditModal() { document.getElementById('edit-modal').classList.add('hidden'); }
+
+        function updateCover(input) {
+            const reader = new FileReader();
+            reader.onload = (e) => { tempCover = e.target.result; };
+            reader.readAsDataURL(input.files[0]);
+        }
+
+        function saveProfile() {
+            user.name = document.getElementById('edit-name').value;
+            user.bio = document.getElementById('edit-bio').value;
+            user.loc = document.getElementById('edit-loc').value;
+            user.web = document.getElementById('edit-web').value;
+            if(tempCover) user.cover = tempCover;
+
+            localStorage.setItem('swarg_session_pro', JSON.stringify(user));
+            
+            let all = JSON.parse(localStorage.getItem('swarg_users_list') || "[]");
+            const idx = all.findIndex(x => x.user === user.user);
+            all[idx] = user;
+            localStorage.setItem('swarg_users_list', JSON.stringify(all));
+
+            closeEditModal();
+            syncUI();
+            renderFeed(); // to update names on posts
+        }
+
+        // --- SEARCH ---
+        function searchUsers(q) {
+            const list = document.getElementById('search-list');
+            if(!q) return list.innerHTML = "";
+            const all = JSON.parse(localStorage.getItem('swarg_users_list') || "[]");
+            const filter = all.filter(x => x.user.includes(q.toLowerCase()) || x.name.toLowerCase().includes(q.toLowerCase()));
+            list.innerHTML = filter.map(x => `
+                <div class="flex items-center justify-between bg-white p-5 rounded-3xl border shadow-sm">
+                    <div class="flex items-center space-x-3">
+                        <img src="${x.dp}" class="w-14 h-14 rounded-2xl object-cover">
+                        <div><p class="font-black text-sm">${x.name} ${x.user === 'amar' ? '<i class="fas fa-check-circle text-blue-500"></i>' : ''}</p><p class="text-xs text-blue-400 italic">@${x.user}</p></div>
+                    </div>
+                    <button class="bg-blue-600 text-white text-[10px] px-6 py-2 rounded-xl font-black">FOLLOW</button>
+                </div>`).join('');
+        }
+
+        // --- NAV ---
+        function showTab(t, b) {
+            document.querySelectorAll('.tab-content').forEach(x => x.classList.remove('active-tab'));
+            document.querySelectorAll('nav button').forEach(x => { x.classList.remove('nav-active'); x.classList.add('text-slate-300'); });
+            document.getElementById('tab-' + t).classList.add('active-tab');
+            if(b) { b.classList.add('nav-active'); b.classList.remove('text-slate-300'); }
+            if(t === 'profile') syncUI();
+        }
+
+        function logout() { localStorage.removeItem('swarg_session_pro'); location.reload(); }
+        function resetApp() { if(confirm("Swarg Reset?")) { localStorage.clear(); location.reload(); } }
+    </script>
+</body>
+</html>
