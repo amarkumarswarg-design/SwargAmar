@@ -8,45 +8,41 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         .tab-content { display: none; }
-        .active-tab { display: block; animation: fadeIn 0.3s ease; }
+        .active-tab { display: block; animation: fadeIn 0.3s; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         .nav-active { color: #1877F2; border-top: 3px solid #1877F2; }
-        /* Mobile touch feedback */
-        .btn-click:active { transform: scale(0.95); background-color: #1565C0; }
-        .btn-green:active { transform: scale(0.95); background-color: #2E7D32; }
+        /* Touch feedback */
+        .btn-active:active { transform: scale(0.95); opacity: 0.8; }
     </style>
 </head>
-<body class="bg-gray-100 mb-16 font-sans">
+<body class="bg-gray-100 font-sans mb-16 overflow-x-hidden">
 
     <div id="auth-screen" class="min-h-screen bg-white flex items-center justify-center p-6">
         <div class="w-full max-w-sm">
             <h1 class="text-6xl font-black text-blue-600 text-center mb-2 italic">Swarg</h1>
-            <p class="text-center text-gray-400 mb-10 font-medium">Connect with the world.</p>
+            <p class="text-center text-gray-400 mb-10 font-medium">Aapka Apna Social World</p>
 
             <div id="login-form" class="space-y-4">
-                <input type="text" id="log-user" placeholder="Username" class="w-full p-4 bg-gray-50 border rounded-2xl outline-none focus:ring-2 focus:ring-blue-500">
-                <input type="password" id="log-pass" placeholder="Password" class="w-full p-4 bg-gray-50 border rounded-2xl outline-none focus:ring-2 focus:ring-blue-500">
-                <button type="button" onclick="handleLogin()" class="w-full bg-blue-600 text-white font-bold py-4 rounded-2xl shadow-lg btn-click">Login Karein</button>
-                <div class="text-center pt-6 border-t">
-                    <button type="button" onclick="toggleAuth(true)" class="text-blue-600 font-bold border-2 border-blue-600 px-8 py-2 rounded-full text-sm">Naya Account Banayein</button>
-                </div>
+                <input type="text" id="log-user" placeholder="Username" class="w-full p-4 bg-gray-50 border rounded-2xl outline-none">
+                <input type="password" id="log-pass" placeholder="Password" class="w-full p-4 bg-gray-50 border rounded-2xl outline-none">
+                <button type="button" onclick="handleLogin()" class="w-full bg-blue-600 text-white font-bold py-4 rounded-2xl shadow-lg btn-active">Login Karein</button>
+                <p class="text-center text-sm pt-6">Account nahi hai? <span onclick="toggleAuth(true)" class="text-blue-600 font-bold">Register Karein</span></p>
             </div>
 
             <div id="register-form" class="hidden space-y-3">
-                <h2 class="text-2xl font-bold text-gray-800 mb-4">Register</h2>
+                <h2 class="text-2xl font-bold text-gray-800">Register</h2>
                 <input type="text" id="reg-name" placeholder="Pura Naam" class="w-full p-4 bg-gray-50 border rounded-xl outline-none">
-                <input type="text" id="reg-user" placeholder="Unique Username" class="w-full p-4 bg-gray-50 border rounded-xl outline-none">
-                <input type="password" id="reg-pass" placeholder="Password Set Karein" class="w-full p-4 bg-gray-50 border rounded-xl outline-none">
-                <div class="flex flex-col p-3 border rounded-xl bg-gray-50">
-                    <label class="text-[10px] text-gray-400 uppercase font-bold">DOB (Janam Tithi)</label>
-                    <input type="date" id="reg-dob" class="bg-transparent outline-none">
-                </div>
-                <div class="relative p-4 border-2 border-dashed border-blue-200 rounded-xl text-center bg-blue-50">
-                    <p id="dp-status" class="text-xs text-blue-600 font-bold">Gallery se Photo Chunein</p>
+                <input type="text" id="reg-user" placeholder="Username (Unique)" class="w-full p-4 bg-gray-50 border rounded-xl outline-none">
+                <input type="password" id="reg-pass" placeholder="Password" class="w-full p-4 bg-gray-50 border rounded-xl outline-none">
+                <input type="date" id="reg-dob" class="w-full p-4 bg-gray-50 border rounded-xl outline-none">
+                
+                <div class="p-4 border-2 border-dashed border-blue-200 rounded-xl text-center bg-blue-50 relative">
+                    <p id="dp-status" class="text-xs text-blue-600 font-bold">Photo Chunein</p>
                     <input type="file" id="reg-dp" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer">
                 </div>
-                <button type="button" onclick="handleRegister()" class="w-full bg-green-600 text-white font-bold py-4 rounded-2xl shadow-lg btn-green">Sign Up</button>
-                <p class="text-center text-sm pt-4 text-blue-600 font-bold cursor-pointer" onclick="toggleAuth(false)">Wapas Login par jayein</p>
+
+                <button type="button" onclick="handleRegister()" class="w-full bg-green-600 text-white font-bold py-4 rounded-2xl shadow-lg btn-active">Sign Up</button>
+                <p class="text-center text-sm pt-4 text-blue-600 font-bold" onclick="toggleAuth(false)">Wapas Login</p>
             </div>
         </div>
     </div>
@@ -57,32 +53,25 @@
             <i class="fab fa-facebook-messenger text-xl text-gray-600"></i>
         </header>
 
-        <main class="max-w-md mx-auto p-3">
+        <main class="max-w-md mx-auto p-4">
             <div id="tab-feed" class="tab-content active-tab">
                 <div class="bg-white p-4 rounded-xl shadow-sm mb-4 flex items-center space-x-3">
-                    <img id="nav-dp" class="w-10 h-10 rounded-full bg-gray-200 border object-cover">
-                    <div class="bg-gray-100 rounded-full w-full p-2 px-4 text-gray-400 text-sm">Kuch post karein...</div>
+                    <img id="nav-dp" class="w-10 h-10 rounded-full border bg-gray-200">
+                    <div class="bg-gray-100 rounded-full w-full p-2 px-4 text-gray-400 text-sm">Post karein...</div>
                 </div>
-                <div class="bg-white rounded-2xl shadow-sm border overflow-hidden">
-                    <div class="p-3 flex items-center space-x-2">
-                        <img id="post-dp" class="w-10 h-10 rounded-full bg-gray-100 border object-cover">
-                        <div><p id="post-name" class="font-bold text-sm text-gray-800">User</p><p class="text-[10px] text-gray-400 font-medium">Just now</p></div>
-                    </div>
-                    <div class="px-3 pb-3 text-sm text-gray-700">Swarg app live ho gaya! 🚀</div>
-                    <div class="bg-gray-100 h-60 flex items-center justify-center text-gray-300">Image Preview</div>
+                <div class="bg-white rounded-2xl shadow-sm border p-4 text-center">
+                    <h3 class="font-bold">Welcome <span id="welcome-name">...</span>!</h3>
+                    <p class="text-sm text-gray-500 mt-2">Aapka Swarg account taiyar hai.</p>
                 </div>
             </div>
 
             <div id="tab-profile" class="tab-content">
-                <div class="bg-white rounded-3xl shadow-sm overflow-hidden border">
-                    <div class="h-32 bg-blue-600"></div>
-                    <div class="px-4 pb-10 text-center">
-                        <img id="prof-dp" class="w-32 h-32 rounded-full border-4 border-white mx-auto -mt-16 bg-gray-100 shadow-xl object-cover">
-                        <h2 id="prof-name" class="text-2xl font-black mt-3">Full Name</h2>
-                        <p id="prof-user" class="text-blue-600 font-bold">@username</p>
-                        <p id="prof-dob-val" class="text-gray-500 text-sm mt-2">DOB: ...</p>
-                        <button onclick="logout()" class="w-full mt-10 bg-red-50 text-red-600 font-bold py-4 rounded-2xl">Logout</button>
-                    </div>
+                <div class="bg-white rounded-3xl shadow-sm overflow-hidden text-center pb-10">
+                    <div class="h-24 bg-blue-600"></div>
+                    <img id="prof-dp" class="w-32 h-32 rounded-full border-4 border-white mx-auto -mt-16 bg-gray-200 object-cover">
+                    <h2 id="prof-name" class="text-2xl font-black mt-4">...</h2>
+                    <p id="prof-user" class="text-blue-600 font-bold">@username</p>
+                    <button onclick="logout()" class="mt-8 bg-red-100 text-red-600 px-10 py-3 rounded-2xl font-bold">Logout</button>
                 </div>
             </div>
         </main>
@@ -95,105 +84,92 @@
 
     <script>
         let selectedDP = "";
-        let currentUser = null;
 
-        // Page load hone par check karein ki koi session hai ya nahi
+        // Check Session
         window.onload = function() {
-            console.log("App Loaded");
             const session = localStorage.getItem('swarg_session');
-            if(session) {
-                currentUser = JSON.parse(session);
-                launchApp();
-            }
+            if(session) launchApp(JSON.parse(session));
         };
 
-        function toggleAuth(showReg) {
-            document.getElementById('login-form').classList.toggle('hidden', showReg);
-            document.getElementById('register-form').classList.toggle('hidden', !showReg);
+        function toggleAuth(show) {
+            document.getElementById('login-form').classList.toggle('hidden', show);
+            document.getElementById('register-form').classList.toggle('hidden', !show);
         }
 
-        // Photo Gallery Selection
+        // Photo Upload
         document.getElementById('reg-dp').onchange = function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(f) {
-                    selectedDP = f.target.result;
-                    document.getElementById('dp-status').innerText = "✅ Photo Select Ho Gayi!";
-                    document.getElementById('dp-status').style.color = "green";
-                };
-                reader.readAsDataURL(file);
-            }
+            const reader = new FileReader();
+            reader.onload = (f) => {
+                selectedDP = f.target.result;
+                document.getElementById('dp-status').innerText = "✅ Photo Ready!";
+            };
+            reader.readAsDataURL(e.target.files[0]);
         };
 
-        // Registration Logic
+        // --- REGISTER ---
         function handleRegister() {
-            const name = document.getElementById('reg-name').value.trim();
-            const user = document.getElementById('reg-user').value.trim().toLowerCase();
-            const pass = document.getElementById('reg-pass').value.trim();
-            const dob = document.getElementById('reg-dob').value;
+            try {
+                const name = document.getElementById('reg-name').value.trim();
+                const user = document.getElementById('reg-user').value.trim().toLowerCase();
+                const pass = document.getElementById('reg-pass').value.trim();
+                const dob = document.getElementById('reg-dob').value;
 
-            if(!name || !user || !pass) {
-                alert("Bhai, saare box bharo pehle!");
-                return;
-            }
-
-            const userData = { name, user, pass, dob, dp: selectedDP };
-            
-            // Save in LocalStorage
-            localStorage.setItem('user_' + user, JSON.stringify(userData));
-            
-            alert("Mubarak ho! Account ban gaya. Ab Login karein.");
-            toggleAuth(false); // Login form par bhej dega
-        }
-
-        // Login Logic
-        function handleLogin() {
-            const user = document.getElementById('log-user').value.trim().toLowerCase();
-            const pass = document.getElementById('log-pass').value.trim();
-
-            if(!user || !pass) {
-                alert("Username aur Password dalo!");
-                return;
-            }
-
-            const savedData = localStorage.getItem('user_' + user);
-
-            if(savedData) {
-                const data = JSON.parse(savedData);
-                if(data.pass === pass) {
-                    currentUser = data;
-                    localStorage.setItem('swarg_session', JSON.stringify(data));
-                    launchApp();
-                } else {
-                    alert("Password galat hai bhai!");
+                if(!name || !user || !pass) {
+                    alert("Please fill name, username and password!");
+                    return;
                 }
-            } else {
-                alert("Ye username nahi mila. Register karein!");
+
+                const data = { name, user, pass, dob, dp: selectedDP };
+                localStorage.setItem('u_' + user, JSON.stringify(data));
+                
+                alert("Account created! Now Log In.");
+                toggleAuth(false);
+            } catch(err) {
+                alert("Register Error: " + err.message);
             }
         }
 
-        function launchApp() {
+        // --- LOGIN ---
+        function handleLogin() {
+            try {
+                const user = document.getElementById('log-user').value.trim().toLowerCase();
+                const pass = document.getElementById('log-pass').value.trim();
+
+                const stored = localStorage.getItem('u_' + user);
+                if(stored) {
+                    const data = JSON.parse(stored);
+                    if(data.pass === pass) {
+                        localStorage.setItem('swarg_session', JSON.stringify(data));
+                        launchApp(data);
+                    } else {
+                        alert("Wrong Password!");
+                    }
+                } else {
+                    alert("User not found! Register first.");
+                }
+            } catch(err) {
+                alert("Login Error: " + err.message);
+            }
+        }
+
+        function launchApp(data) {
             document.getElementById('auth-screen').style.display = 'none';
             document.getElementById('main-app').classList.remove('hidden');
             
-            // Update UI
-            document.getElementById('prof-name').innerText = currentUser.name;
-            document.getElementById('prof-user').innerText = "@" + currentUser.user;
-            document.getElementById('prof-dob-val').innerText = "DOB: " + (currentUser.dob || "Not Set");
-            document.getElementById('post-name').innerText = currentUser.name;
+            document.getElementById('welcome-name').innerText = data.name;
+            document.getElementById('prof-name').innerText = data.name;
+            document.getElementById('prof-user').innerText = "@" + data.user;
             
-            const dp = currentUser.dp || `https://ui-avatars.com/api/?name=${currentUser.name}&bg=1877F2&color=fff`;
-            document.getElementById('prof-dp').src = dp;
-            document.getElementById('nav-dp').src = dp;
-            document.getElementById('post-dp').src = dp;
+            const img = data.dp || "https://ui-avatars.com/api/?name=" + data.name;
+            document.getElementById('nav-dp').src = img;
+            document.getElementById('prof-dp').src = img;
         }
 
-        function showTab(tab, btn) {
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active-tab'));
-            document.querySelectorAll('nav button').forEach(b => b.className = 'text-gray-400 p-2');
-            document.getElementById('tab-' + tab).classList.add('active-tab');
-            btn.className = 'nav-active p-2';
+        function showTab(t, b) {
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active-tab'));
+            document.querySelectorAll('nav button').forEach(n => n.className = 'text-gray-400 p-2');
+            document.getElementById('tab-' + t).classList.add('active-tab');
+            b.className = 'nav-active p-2';
         }
 
         function logout() {
@@ -202,5 +178,4 @@
         }
     </script>
 </body>
-    </html>
-    
+</html>
