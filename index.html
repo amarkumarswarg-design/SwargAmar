@@ -3,53 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Swarg - Aapka Apna Social World</title>
+    <title>Swarg - Social App</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         .tab-content { display: none; }
-        .active-tab { display: block; animation: slideUp 0.3s ease; }
-        @keyframes slideUp { from { transform: translateY(10px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .active-tab { display: block; animation: fadeIn 0.3s; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         .nav-active { color: #1877F2; border-top: 3px solid #1877F2; }
-        /* Touch feedback for mobile */
-        .btn-touch:active { transform: scale(0.96); opacity: 0.9; }
     </style>
 </head>
-<body class="bg-gray-100 font-sans mb-16 overflow-x-hidden">
+<body class="bg-gray-100 mb-16">
 
-    <div id="auth-screen" class="min-h-screen flex items-center justify-center p-6 bg-white">
+    <div id="auth-screen" class="min-h-screen bg-white flex items-center justify-center p-6">
         <div class="w-full max-w-sm">
-            <h1 class="text-6xl font-black text-blue-600 text-center mb-2 tracking-tighter">Swarg</h1>
-            <p class="text-center text-gray-500 mb-8 font-medium italic">Sabse alag, sabse behtar.</p>
-
+            <h1 class="text-5xl font-black text-blue-600 text-center mb-8">Swarg</h1>
+            
             <div id="login-form" class="space-y-4">
-                <input type="text" placeholder="Email ya Mobile" class="w-full p-4 bg-gray-100 border rounded-2xl outline-none focus:ring-2 focus:ring-blue-500">
-                <input type="password" placeholder="Password" class="w-full p-4 bg-gray-100 border rounded-2xl outline-none focus:ring-2 focus:ring-blue-500">
-                <button onclick="enterApp()" class="w-full bg-blue-600 text-white font-bold py-4 rounded-2xl shadow-lg btn-touch transition-all">Login</button>
-                
-                <div class="pt-4 text-center">
-                    <p class="text-gray-500 text-sm mb-2">Naye hain?</p>
-                    <button onclick="toggleAuth(true)" class="text-blue-600 font-bold border-2 border-blue-600 px-6 py-2 rounded-full btn-touch">Account Banayein</button>
-                </div>
+                <input type="text" id="log-user" placeholder="Username" class="w-full p-4 bg-gray-50 border rounded-2xl outline-none">
+                <input type="password" id="log-pass" placeholder="Password" class="w-full p-4 bg-gray-50 border rounded-2xl outline-none">
+                <button onclick="handleLogin()" class="w-full bg-blue-600 text-white font-bold py-4 rounded-2xl shadow-lg">Login</button>
+                <p class="text-center text-sm">Account nahi hai? <span onclick="showReg(true)" class="text-blue-600 font-bold cursor-pointer">Register</span></p>
             </div>
 
             <div id="register-form" class="hidden space-y-3">
-                <h2 class="text-xl font-bold text-gray-700 mb-4">Naya Account</h2>
                 <input type="text" id="reg-name" placeholder="Pura Naam" class="w-full p-4 bg-gray-50 border rounded-xl outline-none">
-                <input type="text" id="reg-work" placeholder="Workplace (e.g. Student)" class="w-full p-4 bg-gray-50 border rounded-xl outline-none">
-                <div class="p-3 border rounded-xl bg-gray-50">
-                    <label class="text-[10px] text-gray-400 block uppercase font-bold">Janam Tithi (DOB)</label>
-                    <input type="date" id="reg-dob" class="w-full bg-transparent outline-none">
-                </div>
-                
-                <div class="p-4 border-2 border-dashed border-blue-200 rounded-xl text-center relative bg-blue-50">
-                    <p id="dp-status" class="text-xs text-blue-600 font-bold">Gallery se DP Chunein</p>
-                    <input type="file" id="reg-dp" accept="image/*" class="opacity-0 absolute inset-0 w-full h-full cursor-pointer">
-                    <i class="fas fa-image text-2xl text-blue-400 mt-1"></i>
-                </div>
-
-                <button onclick="completeRegistration()" class="w-full bg-green-600 text-white font-bold py-4 rounded-2xl shadow-lg btn-touch mt-4">Sign Up</button>
-                <button onclick="toggleAuth(false)" class="w-full text-gray-500 font-bold py-2">Wapas jayein</button>
+                <input type="text" id="reg-user" placeholder="Unique Username" class="w-full p-4 bg-gray-50 border rounded-xl outline-none">
+                <input type="password" id="reg-pass" placeholder="Password Set Karein" class="w-full p-4 bg-gray-50 border rounded-xl outline-none">
+                <input type="file" id="reg-dp" accept="image/*" class="text-xs">
+                <button onclick="handleRegister()" class="w-full bg-green-600 text-white font-bold py-4 rounded-2xl shadow-lg">Account Banayein</button>
+                <p class="text-center text-sm"><span onclick="showReg(false)" class="text-blue-600 font-bold cursor-pointer">Wapas jayein</span></p>
             </div>
         </div>
     </div>
@@ -57,153 +40,117 @@
     <div id="main-app" class="hidden">
         <header class="bg-white sticky top-0 z-50 p-4 flex justify-between items-center shadow-sm">
             <h2 class="text-2xl font-black text-blue-600 italic">Swarg</h2>
-            <div class="flex space-x-4 text-gray-600">
-                <i class="fab fa-facebook-messenger text-xl"></i>
-            </div>
+            <i class="fab fa-facebook-messenger text-xl text-gray-600"></i>
         </header>
 
-        <main class="max-w-md mx-auto">
-            <div id="tab-feed" class="tab-content active-tab p-3">
-                <div class="flex space-x-2 overflow-x-auto hide-scrollbar mb-4 pb-2">
-                    <div class="min-w-[85px] h-32 bg-gray-200 rounded-2xl relative overflow-hidden border">
-                        <img id="story-my-dp" src="" class="w-full h-full object-cover">
-                        <div class="absolute bottom-0 left-0 right-0 bg-white p-1 text-[10px] text-center font-bold">Add Story</div>
-                        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-blue-600 text-white rounded-full w-6 h-6 flex items-center justify-center border-2 border-white">+</div>
+        <main class="max-w-md mx-auto p-3">
+            <div id="tab-feed" class="tab-content active-tab">
+                <div class="bg-white p-4 rounded-xl shadow-sm mb-4">
+                    <div class="flex items-center space-x-3">
+                        <img id="my-small-dp" src="" class="w-10 h-10 rounded-full border bg-gray-200">
+                        <button onclick="alert('Post feature coming soon with Database!')" class="bg-gray-100 rounded-full w-full p-2 px-4 text-left text-gray-500 text-sm">Post likhein...</button>
                     </div>
                 </div>
 
-                <div class="bg-white rounded-2xl shadow-sm mb-4 overflow-hidden border">
-                    <div class="p-3 flex items-center space-x-2">
-                        <img id="feed-user-dp" src="" class="w-10 h-10 rounded-full bg-gray-200 border">
-                        <div><p id="feed-user-name" class="font-bold text-sm text-gray-800">User</p><p class="text-[10px] text-gray-400 font-medium">Just now • <i class="fas fa-globe-americas"></i></p></div>
-                    </div>
-                    <div class="px-3 pb-3 text-sm text-gray-700">Swarg app live ho gaya! Swagat hai Amar bhai. 🚀</div>
-                    <div class="bg-gray-100 h-64 flex items-center justify-center text-gray-300 italic">First Post Image</div>
-                    
-                    <div class="p-3 flex justify-around border-t mt-2">
-                        <button onclick="toggleLike(this)" class="flex items-center space-x-2 text-gray-500 font-bold text-sm btn-touch">
-                            <i class="far fa-thumbs-up text-lg"></i> <span>Like</span>
-                        </button>
-                        <button onclick="toggleComment()" class="flex items-center space-x-2 text-gray-500 font-bold text-sm btn-touch">
-                            <i class="far fa-comment text-lg"></i> <span>Comment</span>
-                        </button>
-                    </div>
-                    <div id="comment-section" class="hidden p-3 bg-gray-50 border-t">
-                        <input type="text" placeholder="Comment karein..." class="w-full p-2 bg-white border rounded-full text-xs outline-none px-4">
+                <div id="posts-container">
+                    <div class="bg-white rounded-xl shadow-sm mb-4 border overflow-hidden">
+                        <div class="p-3 flex items-center space-x-2">
+                            <img id="post-dp" src="" class="w-10 h-10 rounded-full bg-gray-200">
+                            <div><p id="post-user" class="font-bold text-sm">User</p><p class="text-[10px] text-gray-400">Just Now</p></div>
+                        </div>
+                        <div class="p-3 text-sm">Swarg app par mera swagat hai! 🚀</div>
+                        <div class="p-3 flex justify-around border-t">
+                            <button onclick="this.classList.toggle('text-blue-600')"><i class="far fa-thumbs-up"></i> Like</button>
+                            <button><i class="far fa-comment"></i> Comment</button>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <div id="tab-account" class="tab-content">
-                <div class="relative h-44 bg-blue-600">
-                    <div class="absolute -bottom-12 left-4">
-                        <img id="profile-main-dp" src="" class="w-32 h-32 rounded-full border-4 border-white bg-gray-100 object-cover shadow-xl">
+            <div id="tab-search" class="tab-content">
+                <input type="text" id="user-search" onkeyup="searchUser()" placeholder="Search username..." class="w-full p-4 rounded-2xl bg-white shadow-sm outline-none">
+                <div id="search-result" class="mt-4 p-4 text-center text-gray-400">Kisi ko dhundhein...</div>
+            </div>
+
+            <div id="tab-profile" class="tab-content">
+                <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
+                    <div class="h-32 bg-blue-600"></div>
+                    <div class="px-4 pb-6 text-center">
+                        <img id="prof-dp" src="" class="w-24 h-24 rounded-full border-4 border-white mx-auto -mt-12 bg-gray-100 object-cover">
+                        <h2 id="prof-name" class="text-2xl font-bold mt-2">...</h2>
+                        <p id="prof-user" class="text-gray-500 text-sm">@username</p>
                     </div>
                 </div>
-                <div class="mt-14 p-5">
-                    <h2 id="disp-name" class="text-3xl font-black text-gray-800">Amar</h2>
-                    <p class="text-gray-500 font-medium">Swarg Creator</p>
-                    <div class="flex space-x-2 mt-5">
-                        <button class="flex-1 bg-blue-600 text-white font-bold py-2.5 rounded-xl shadow-md btn-touch">Edit Profile</button>
-                        <button class="bg-gray-200 px-5 rounded-xl btn-touch"><i class="fas fa-ellipsis-h"></i></button>
-                    </div>
-                    <div class="mt-8 space-y-4">
-                        <div class="flex items-center text-gray-600"><i class="fas fa-briefcase w-8 text-blue-500"></i> Works at <b id="disp-work" class="ml-1 text-gray-800">...</b></div>
-                        <div class="flex items-center text-gray-600"><i class="fas fa-birthday-cake w-8 text-pink-500"></i> Born on <b id="disp-dob" class="ml-1 text-gray-800">...</b></div>
-                    </div>
-                </div>
-            </div>
-            
-            <div id="tab-search" class="tab-content p-4">
-                <input type="text" placeholder="Search Swarg..." class="w-full p-4 rounded-2xl bg-gray-200 outline-none">
-            </div>
-            <div id="tab-settings" class="tab-content p-4 text-center">
-                <button onclick="location.reload()" class="bg-red-50 text-red-600 font-bold px-10 py-4 rounded-2xl w-full border border-red-100">Log Out</button>
             </div>
         </main>
 
-        <nav class="fixed bottom-0 w-full bg-white border-t flex justify-around p-1 z-50 shadow-2xl">
-            <button onclick="showTab('feed', this)" class="flex flex-col items-center p-2 nav-active btn-touch">
-                <i class="fas fa-home text-xl"></i><span class="text-[10px] font-bold">Home</span>
-            </button>
-            <button onclick="showTab('search', this)" class="flex flex-col items-center p-2 text-gray-400 btn-touch">
-                <i class="fas fa-search text-xl"></i><span class="text-[10px] font-bold">Search</span>
-            </button>
-            <button onclick="showTab('settings', this)" class="flex flex-col items-center p-2 text-gray-400 btn-touch">
-                <i class="fas fa-bars text-xl"></i><span class="text-[10px] font-bold">Menu</span>
-            </button>
-            <button onclick="showTab('account', this)" class="flex flex-col items-center p-2 text-gray-400 btn-touch">
-                <i class="fas fa-user-circle text-xl"></i><span class="text-[10px] font-bold">Profile</span>
-            </button>
+        <nav class="fixed bottom-0 w-full bg-white border-t flex justify-around p-2">
+            <button onclick="showTab('feed', this)" class="nav-active"><i class="fas fa-home text-xl"></i></button>
+            <button onclick="showTab('search', this)" class="text-gray-400"><i class="fas fa-search text-xl"></i></button>
+            <button onclick="showTab('profile', this)" class="text-gray-400"><i class="fas fa-user-circle text-xl"></i></button>
         </nav>
     </div>
 
     <script>
-        let selectedDP = "https://ui-avatars.com/api/?name=User&bg=1877F2&color=fff";
+        let userData = { name: "User", user: "user", pass: "123", dp: "" };
 
-        function toggleAuth(showReg) {
-            document.getElementById('login-form').classList.toggle('hidden', showReg);
-            document.getElementById('register-form').classList.toggle('hidden', !showReg);
-            window.scrollTo(0,0);
+        function showReg(val) {
+            document.getElementById('login-form').classList.toggle('hidden', val);
+            document.getElementById('register-form').classList.toggle('hidden', !val);
         }
 
-        // DP Upload Handler
-        document.getElementById('reg-dp').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    selectedDP = e.target.result;
-                    document.getElementById('dp-status').innerText = "✅ DP Selected!";
-                };
-                reader.readAsDataURL(file);
+        // DP Reader
+        document.getElementById('reg-dp').onchange = function(e) {
+            const reader = new FileReader();
+            reader.onload = (res) => userData.dp = res.target.result;
+            reader.readAsDataURL(e.target.files[0]);
+        };
+
+        function handleRegister() {
+            userData.name = document.getElementById('reg-name').value;
+            userData.user = document.getElementById('reg-user').value;
+            userData.pass = document.getElementById('reg-pass').value;
+
+            if(!userData.user || !userData.pass) return alert("Username aur Password bhariye!");
+            alert("Account ban gaya! Ab login karein.");
+            showReg(false);
+        }
+
+        function handleLogin() {
+            const u = document.getElementById('log-user').value;
+            const p = document.getElementById('log-pass').value;
+
+            if(u === userData.user && p === userData.pass) {
+                document.getElementById('auth-screen').style.display = 'none';
+                document.getElementById('main-app').classList.remove('hidden');
+                updateUI();
+            } else {
+                alert("Galat password ya username!");
             }
-        });
-
-        function completeRegistration() {
-            const name = document.getElementById('reg-name').value;
-            if(!name) return alert("Bhai naam toh likho!");
-            
-            document.getElementById('disp-name').innerText = name;
-            document.getElementById('feed-user-name').innerText = name;
-            document.getElementById('disp-work').innerText = document.getElementById('reg-work').value || "Swarg";
-            document.getElementById('disp-dob').innerText = document.getElementById('reg-dob').value || "Secret";
-            
-            document.getElementById('profile-main-dp').src = selectedDP;
-            document.getElementById('feed-user-dp').src = selectedDP;
-            document.getElementById('story-my-dp').src = selectedDP;
-
-            enterApp();
         }
 
-        function enterApp() {
-            document.getElementById('auth-screen').style.display = 'none';
-            document.getElementById('main-app').classList.remove('hidden');
-            window.scrollTo(0,0);
+        function updateUI() {
+            document.getElementById('prof-name').innerText = userData.name;
+            document.getElementById('prof-user').innerText = "@" + userData.user;
+            document.getElementById('post-user').innerText = userData.name;
+            if(userData.dp) {
+                document.getElementById('prof-dp').src = userData.dp;
+                document.getElementById('my-small-dp').src = userData.dp;
+                document.getElementById('post-dp').src = userData.dp;
+            }
         }
 
-        function showTab(id, btn) {
+        function showTab(tab, btn) {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active-tab'));
-            document.querySelectorAll('nav button').forEach(b => {
-                b.classList.remove('nav-active', 'text-blue-600');
-                b.classList.add('text-gray-400');
-            });
-            document.getElementById('tab-' + id).classList.add('active-tab');
-            btn.classList.add('nav-active');
-            btn.classList.remove('text-gray-400');
+            document.querySelectorAll('nav button').forEach(b => b.className = 'text-gray-400');
+            document.getElementById('tab-' + tab).classList.add('active-tab');
+            btn.className = 'nav-active';
         }
 
-        function toggleLike(btn) {
-            btn.classList.toggle('text-blue-600');
-            const icon = btn.querySelector('i');
-            icon.classList.toggle('far');
-            icon.classList.toggle('fas');
-        }
-
-        function toggleComment() {
-            document.getElementById('comment-section').classList.toggle('hidden');
+        function searchUser() {
+            let val = document.getElementById('user-search').value;
+            document.getElementById('search-result').innerText = val ? "User '" + val + "' nahi mila." : "Search karein...";
         }
     </script>
 </body>
-    </html>
-    
+</html>
