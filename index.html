@@ -319,4 +319,87 @@
         }
 
         function handleFollow(targetU) {
-            let users = JSON.parse(localSto
+            let users = JSON.parse(localStorage.getItem('swarg_u1') || "[]");
+            const target = users.find(x => x.user === targetU);
+            const myU = users.find(x => x.user === me.user);
+
+            const idx = myU.following.indexOf(targetU);
+            if(idx === -1) {
+                myU.following.push(targetU);
+                target.followers.push(me.user);
+            } else {
+                myU.following.splice(idx, 1);
+                target.followers.splice(target.followers.indexOf(me.user), 1);
+            }
+
+            localStorage.setItem('swarg_u1', JSON.stringify(users));
+            viewProfile(targetU);
+            sync();
+        }
+
+        function closeOtherProfile() { document.getElementById('other-profile-modal').classList.add('hidden'); }
+
+        // --- SEARCH ---
+        function searchUsers(q) {
+            const list = document.getElementById('search-list');
+            if(!q) return list.innerHTML = "";
+            const users = JSON.parse(localStorage.getItem('swarg_u1') || "[]");
+            const filter = users.filter(x => x.user.includes(q.toLowerCase()) || x.name.toLowerCase().includes(q.toLowerCase()));
+            list.innerHTML = filter.map(x => `
+                <div class="bg-white p-4 rounded-3xl border flex items-center justify-between" onclick="viewProfile('${x.user}')">
+                    <div class="flex items-center space-x-3">
+                        <img src="${x.dp}" class="w-12 h-12 rounded-2xl object-cover">
+                        <div><p class="font-black text-sm">${x.name}</p><p class="text-xs text-blue-500 font-bold lowercase">@${x.user}</p></div>
+                    </div>
+                    <i class="fas fa-chevron-right text-slate-300"></i>
+                </div>`).join('');
+        }
+
+        // --- STORIES ---
+        function uploadStory(i) {
+            const r = new FileReader();
+            r.onload = (e) => {
+                let s = JSON.parse(localStorage.getItem('swarg_st1') || "[]");
+                s.unshift({ id: Date.now(), user: me.user, name: me.name, dp: me.dp, img: e.target.result });
+                localStorage.setItem('swarg_st1', JSON.stringify(s));
+                renderStories();
+            };
+            r.readAsDataURL(i.files[0]);
+        }
+
+        function renderStories() {
+            const wall = document.getElementById('story-wall');
+            const stories = JSON.parse(localStorage.getItem('swarg_st1') || "[]");
+            wall.innerHTML = stories.map(s => `
+                <div class="flex-shrink-0 text-center cursor-pointer" onclick="viewStory(${s.id})">
+                    <div class="w-16 h-16 rounded-full border-2 border-pink-500 p-1 bg-white">
+                        <img src="${s.img}" class="w-full h-full rounded-full object-cover">
+                    </div>
+                    <p class="text-[10px] mt-1 font-bold text-slate-700">${s.name.split(' ')[0]}</p>
+                </div>`).join('');
+        }
+
+        function viewStory(id) {
+            const s = JSON.parse(localStorage.getItem('swarg_st1') || "[]").find(x => x.id === id);
+            document.getElementById('sm-img').src = s.img;
+            document.getElementById('sm-name').innerText = s.name;
+            document.getElementById('sm-dp').src = s.dp;
+            document.getElementById('story-modal').classList.remove('hidden');
+        }
+
+        function closeStory() { document.getElementById('story-modal').classList.add('hidden'); }
+
+        // --- GENERAL ---
+        function showTab(t, b) {
+            document.querySelectorAll('.tab-content').forEach(x => x.classList.remove('active-tab'));
+            document.querySelectorAll('nav button').forEach(x => { x.className = 'text-slate-300'; });
+            document.getElementById('tab-' + t).classList.add('active-tab');
+            if(b) b.className = 'nav-active';
+            if(t === 'profile') sync();
+        }
+
+        function logout() { localStorage.removeItem('swarg_s1'); location.reload(); }
+        function resetApp() { if(confirm("Swarg Reset?")) { localStorage.clear(); location.reload(); } }
+    </script>
+</body>
+</html>
